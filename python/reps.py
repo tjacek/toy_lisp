@@ -9,3 +9,6 @@ def schemestr(exp):
         return '(' + ' '.join(map(schemestr, exp)) + ')' 
     else:
         return str(exp)
+
+if __name__ == "__main__":
+    repl()
