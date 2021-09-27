@@ -4,12 +4,16 @@ Object * Object::eval(Envir envir){
 	return this;
 }
 
+Object * Object::call(std::list<Object*> args,Envir envir){
+  return this;
+}
+
 bool Object::to_bool(){
 	return true;
 }
 
 NumberObject::NumberObject(float value){
-  this->type=ObjectType::number_type;
+//  this->type=ObjectType::number_type;
   this->value=value;
 }
 
@@ -22,7 +26,7 @@ bool NumberObject::to_bool(){
 }
 
 StringObject::StringObject(std::string value){
-  this->type=ObjectType::string_type;
+//  this->type=ObjectType::string_type;
   this->value=value;
 }
 
