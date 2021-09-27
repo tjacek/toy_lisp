@@ -44,7 +44,7 @@ Expr * read_from_tokens(std::list<std::string>& tokens){
         }
 	}
 	tokens.pop_front();
-	ProperExpr * result=new ProperExpr(expr);
+	ComplexExpr * result=new ComplexExpr(expr);
 	return result;
 }
 

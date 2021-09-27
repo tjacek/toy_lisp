@@ -1,7 +1,8 @@
 #include "lisp.h"
 
 Atom::Atom(std::string value){
-	this->value=value;
+	this->type=ExprType::atom_type;
+  this->value=value;
 }
 
 void Atom::show(){
@@ -12,11 +13,12 @@ int Atom::size(){
   return 1;
 }
 
-ProperExpr::ProperExpr(std::list<Expr*> value){
-	this->value=value;
+ComplexExpr::ComplexExpr(std::list<Expr*> value){
+	this->type=ExprType::complex_type;
+  this->value=value;
 }
 
-void ProperExpr::show(){
+void ComplexExpr::show(){
     std::cout << " " << this->size();
     for(auto it = this->value.begin(); it != this->value.end(); ++it) {
       (*it)->show();
@@ -24,7 +26,7 @@ void ProperExpr::show(){
     }
 }
 
-int ProperExpr::size(){
+int ComplexExpr::size(){
     int value=0;
     for(auto it = this->value.begin(); it != this->value.end(); ++it) {
       value+=(*it)->size();
