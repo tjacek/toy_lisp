@@ -14,29 +14,35 @@ class Object;
 typedef std::map<std::string,Object*> Envir;
 
 class Object{
-    public:
-        ObjectType type;
-        virtual Object * eval(Envir envir);
-        virtual Object * call(std::list<Object*> args,Envir envir);
-        virtual std::string to_str();
-        virtual bool to_bool();
-};
+  public:
+    ObjectType type;
+    float number;
+  	std::string str;
+    std::list<Object*> objects;
 
-class NumberObject: public Object{
-   public:
-       ObjectType type=ObjectType::number_type;
-       NumberObject(float value);
-       float value;
-       std::string to_str();
-       bool to_bool();
-};
+  	Object()=delete;
+  	
+  	Object(float value){
+  		this->type=ObjectType::number_type;
+  		this->number=value;
+  	}
 
-class StringObject:public Object{
-   public:
-       ObjectType type=ObjectType::string_type;
-       StringObject(std::string value);
-       string value;
-       std::string to_str();
+  	Object(std::string value){
+  		this->type=ObjectType::string_type;
+  		this->str=value;
+  	}
+
+    Object * call(Object * call,Envir envir){
+        return this;
+    }
+
+    bool to_bool(){
+      return true;
+    }
+
+    std::string to_str(){
+       return str;
+    }
 };
 
 enum class ExprType{atom_type,complex_type};
