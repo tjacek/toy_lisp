@@ -11,14 +11,14 @@ enum class ObjectType{number_type,string_type,operator_type};
 
 class Object;
 
-typedef std::map<std::string,Object> Envir;
+typedef std::map<std::string,Object*> Envir;
 
 class Object{
     public:
         ObjectType type;
         virtual Object * eval(Envir envir);
         virtual Object * call(std::list<Object*> args,Envir envir);
-        virtual std::string to_str()=0;
+        virtual std::string to_str();
         virtual bool to_bool();
 };
 

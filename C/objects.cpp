@@ -12,8 +12,11 @@ bool Object::to_bool(){
 	return true;
 }
 
+std::string Object::to_str(){
+  return "";
+}
+
 NumberObject::NumberObject(float value){
-//  this->type=ObjectType::number_type;
   this->value=value;
 }
 
@@ -26,10 +29,9 @@ bool NumberObject::to_bool(){
 }
 
 StringObject::StringObject(std::string value){
-//  this->type=ObjectType::string_type;
   this->value=value;
 }
 
 std::string StringObject::to_str(){
-   return this->value;
+  return this->value;
 }
