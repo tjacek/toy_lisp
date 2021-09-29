@@ -17,20 +17,20 @@ class Object{
   public:
     ObjectType type;
     float number;
-  	std::string str;
+   std::string str;
     std::list<Object*> objects;
 
-  	Object()=delete;
-  	
-  	Object(float value){
-  		this->type=ObjectType::number_type;
-  		this->number=value;
-  	}
+   Object()=delete;
+   
+   Object(float value){
+      this->type=ObjectType::number_type;
+      this->number=value;
+   }
 
-  	Object(std::string value){
-  		this->type=ObjectType::string_type;
-  		this->str=value;
-  	}
+   Object(std::string value){
+      this->type=ObjectType::string_type;
+      this->str=value;
+   }
 
     Object * call(Object * call,Envir envir){
         return this;
