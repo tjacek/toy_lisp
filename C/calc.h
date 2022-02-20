@@ -7,8 +7,10 @@
 
 class Calculator{
   std::list<double> stack;
-  void push(double value);
-  double apply(double value);
+  public:
+    void push(double value);
+    double apply(std::string operation);
+    double peek();
 };
 
 double reverse_polish(std::string);
