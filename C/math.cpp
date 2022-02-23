@@ -1,20 +1,21 @@
 #include "math.h"
-  
-Token::Token(double value){
+
+NumberToken::NumberToken(double value){
   this->type=NUMBER;
   this->value=value;
 }
 
-Token::Token(TokenType type){
-	this->type=type;
-	this->value=0.0;
+StringToken::StringToken(TokenType type,std::string value){
+  this->type=type;
+  this->value=value;
 }
 
 void parse(std::string in_path){
   std::ifstream infile(in_path);
   std::string line;
   while (std::getline(infile, line)){
-    tokenize(line);
+    std::vector<Token> tokens= tokenize(line);
+    std::cout << tokens.size() << std::endl;
   }
 }
 
@@ -25,14 +26,17 @@ std::vector<Token> tokenize(std::string line){
   for ( ; iter != end; ++iter){
     std::string str_i=*iter;
     if(std::regex_match (str_i,number_reg)){
+      double value=atof(str_i.c_str());
+      tokens.push_back(NumberToken(value));
       std::cout << str_i << std::endl;
     } else if(std::regex_match (str_i,var_reg)){
+      tokens.push_back(StringToken(VAR,str_i));
       std::cout << str_i << std::endl;
     } else if(std::regex_match (str_i,command_reg)){
+      tokens.push_back(StringToken(COMMAND,str_i));
       std::cout << str_i << std::endl;
     }
   }
-  std::cout << std::endl;
   return tokens;
 }
 
