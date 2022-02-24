@@ -4,6 +4,7 @@
 #include <fstream>
 #include <regex>
 #include <list>
+#include <string.h>
 #ifndef MATH
 #define MATH
 
@@ -17,19 +18,22 @@ const static std::regex var_reg("[a-zA-Z][a-zA-Z0-9]*");
 class Token{
   public:
     TokenType type;
+    virtual std::string to_str()=0;
 };
 
 class NumberToken: public Token{
   public:
     double value;
     NumberToken(double value);
+    std::string to_str();
 };
 
 class StringToken: public Token{
   public:
     std::string value;
     StringToken(TokenType type,std::string value);
+    std::string to_str();
 };
 
-std::vector<Token> tokenize(std::string line);
+std::vector<Token*> tokenize(std::string line);
 #endif
