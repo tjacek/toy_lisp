@@ -35,5 +35,7 @@ class StringToken: public Token{
     std::string to_str();
 };
 
-std::vector<Token*> tokenize(std::string line);
+typedef std::vector<Token*> Line;
+Line tokenize(std::string line);
+void print_lines(std::vector<Line> & lines);
 #endif
