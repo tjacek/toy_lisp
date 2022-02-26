@@ -25,6 +25,7 @@ void parse(std::string in_path){
   std::vector<Line> lines;
   while (std::getline(infile, line)){
     Line tokens= tokenize(line);
+    parse_statement(tokens);
     lines.push_back(tokens);
   }
   print_lines(lines);
@@ -51,15 +52,28 @@ Line tokenize(std::string line){
 }
 
 void print_lines(std::vector<Line> & lines){
-//std::vector<>::iterator<Student> it;
   for (auto it = lines.begin(); it != lines.end(); ++it) {
-//    Line line_i= (*it);
     for (auto token = it->begin(); token != it->end(); ++token) {
       Token* token_j=(*token);
       std::cout << token_j->to_str() << " ";
     }
     std::cout << std::endl;
   }
+}
+
+ASTree * parse_statement(Line &line){
+//  Token* token_i=line.at(0);
+  std::cout << is_token(0,"read",line);
+  return NULL;
+}
+
+bool is_token(int i,std::string symbol,Line & line){
+ Token * token_i=line.at(i);
+ if(token_i->type==NUMBER){
+   return false;
+ }
+ StringToken * str_token=(StringToken*) token_i;
+ return str_token->value.compare(symbol)==0;
 }
 
 

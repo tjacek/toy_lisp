@@ -38,4 +38,17 @@ class StringToken: public Token{
 typedef std::vector<Token*> Line;
 Line tokenize(std::string line);
 void print_lines(std::vector<Line> & lines);
+bool is_token(int i,std::string symbol,Line & line);
+
+enum ASTreeType {SET,READ,PRINT};
+
+class ASTree{
+  public:
+    ASTreeType type;
+    ASTree *left;
+    ASTree *right;
+};
+
+ASTree * parse_statement(Line & line);
+
 #endif
