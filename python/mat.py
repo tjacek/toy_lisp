@@ -47,12 +47,15 @@ def parse_statement(tokens):
         except_token(1,'var',tokens)
         var=tokens[1].value
         except_token(2,'=',tokens)
-        expr=None
+        expr=parse_expr(tokens[3:])
         return ASTLeaf('set',tokens[1].value,expr=None)
     if(tokens[0].type=='read'):        
         return ASTLeaf('read',tokens[1].value)    
     if(tokens[0].type=='print'):
         return ASTLeaf('print',tokens[1].value)   
+
+def parse_expr(tokens):
+    print(tokens)
 
 in_path="../C/test.math"
 tokens=interpret(in_path)
