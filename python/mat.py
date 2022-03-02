@@ -3,6 +3,23 @@ from collections import namedtuple
 
 Token=namedtuple('Token',['type','value'])
 
+class Tokens(list):
+    def __init__(self, arg=[]):
+        super(Tokens, self).__init__(arg)
+        self.current=0
+
+    def peek(self):
+        return self[self.current]
+
+    def shift(self):
+        self.current+=1
+
+    def except_token(self,symbol)
+        if(self.peek().type!=symbol)
+            raise Exception("parse excep")
+#        if(self[self.current].type!=symbol):
+#            raise Exception("Parser Error")
+
 class ASTNode(object):
     def __init__(self,node_type,left,right):
         self.type=node_type 
@@ -24,7 +41,7 @@ def interpret(in_path):
         tokens=[tokenize(line_i)  for line_i in lines]
         for raw_i in tokens:
             tree_i=parse_statement(raw_i)
-            print(tree_i)
+#            print(tree_i)
 #        return tokens
 
 def tokenize(line_i):
@@ -36,7 +53,7 @@ def tokenize(line_i):
             tokens.append(Token(raw_i,None))
         elif(re.match(r"[a-zA-Z][a-zA-Z0-9]*",raw_i)):
             tokens.append(Token('var',raw_i))
-    return tokens
+    return Tokens(tokens)
 
 def except_token(i,symbol,tokens):
     if(tokens[i].type!=symbol):
@@ -55,7 +72,7 @@ def parse_statement(tokens):
         return ASTLeaf('print',tokens[1].value)   
 
 def parse_expr(tokens):
-    print(tokens)
+    print("OK")#tokens)
 
 in_path="../C/test.math"
 tokens=interpret(in_path)
