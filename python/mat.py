@@ -14,6 +14,12 @@ class Tokens(list):
     def shift(self):
         self.current+=1
 
+    def next_token_is(self,types):
+        token=self.peek()
+        is_type=[token.type==type_i 
+                for type_i in types]
+        return any(is_type)
+
     def except_token(self,symbol)
         if(self.peek().type!=symbol)
             raise Exception("parse excep")
