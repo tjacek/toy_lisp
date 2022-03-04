@@ -19,12 +19,15 @@ class Tokens(list):
         is_type=[token.type==type_i 
                 for type_i in types]
         return any(is_type)
+ 
+    def except_token(self,types):
+        if( not self.next_token_is(types)):
+            raise Exception("Parse error")
+        self.shift()
 
-    def except_token(self,symbol)
-        if(self.peek().type!=symbol)
-            raise Exception("parse excep")
-#        if(self[self.current].type!=symbol):
-#            raise Exception("Parser Error")
+#        if(self.peek().type!=symbol)
+#            raise Exception("parse excep")
+
 
 class ASTNode(object):
     def __init__(self,node_type,left,right):
