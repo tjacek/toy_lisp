@@ -21,13 +21,11 @@ class Tokens(list):
         return any(is_type)
  
     def except_token(self,types):
+        token=self.peek()
         if( not self.next_token_is(types)):
             raise Exception("Parse error")
         self.shift()
-
-#        if(self.peek().type!=symbol)
-#            raise Exception("parse excep")
-
+        return token
 
 class ASTNode(object):
     def __init__(self,node_type,left,right):
@@ -50,7 +48,7 @@ def interpret(in_path):
         tokens=[tokenize(line_i)  for line_i in lines]
         for raw_i in tokens:
             tree_i=parse_statement(raw_i)
-#            print(tree_i)
+            print(tree_i)
 #        return tokens
 
 def tokenize(line_i):
@@ -64,21 +62,21 @@ def tokenize(line_i):
             tokens.append(Token('var',raw_i))
     return Tokens(tokens)
 
-def except_token(i,symbol,tokens):
-    if(tokens[i].type!=symbol):
-        raise Exception("Parser Error")
+#def except_token(i,symbol,tokens):
+#    if(tokens[i].type!=symbol):
+#        raise Exception("Parser Error")
 
 def parse_statement(tokens):
-    if(tokens[0].type=='set'):
-        except_token(1,'var',tokens)
-        var=tokens[1].value
-        except_token(2,'=',tokens)
-        expr=parse_expr(tokens[3:])
-        return ASTLeaf('set',tokens[1].value,expr=None)
-    if(tokens[0].type=='read'):        
-        return ASTLeaf('read',tokens[1].value)    
-    if(tokens[0].type=='print'):
-        return ASTLeaf('print',tokens[1].value)   
+    token_i=tokens.except_token(['read','set','print'])
+    type_i=token_i.type
+    if(type_i=="read"):
+        return ASTLeaf('read',tokens.peek().value)
+    if(type_i=="print"):
+        return ASTLeaf('print',tokens.peek().value)
+    if(type_i=="set"):
+        var_token=tokens.except_token(['var'])
+        tokens.except_token(['='])
+        return ASTLeaf('set',tokens.peek().value,expr=None)
 
 def parse_expr(tokens):
     print("OK")#tokens)
