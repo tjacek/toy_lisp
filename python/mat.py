@@ -12,7 +12,9 @@ class Tokens(list):
         return self[self.current]
 
     def shift(self):
-        self.current+=1
+        if(self.current<len(self)-1):
+            self.current+=1
+        return self.peek()
 
     def next_token_is(self,types):
         token=self.peek()
@@ -33,12 +35,29 @@ class ASTNode(object):
         self.left=left
         self.right=right
 
+    def print(self,s=""):
+        print_helper(self.right," "+s)
+        print_helper(self.type,s)
+        print_helper(self.left," "+s)
+
+def print_helper(obj, s=""):
+    if(type(obj)==ASTNode or type(obj)==ASTLeaf):
+        obj.print(s)
+    if(obj):
+        print(s+ str(obj))
+
 class ASTLeaf(object):
     def __init__(self,node_type,var,expr=None):
         self.type=node_type
         self.var=var
         self.expr=expr
     
+    def print(self,s=""):
+        print(s+self.type)
+        print(s+self.var)
+        if(self.expr):
+            self.expr.print(s)
+
     def __str__(self):
         return f"{self.type},{self.var}"
 
@@ -48,8 +67,8 @@ def interpret(in_path):
         tokens=[tokenize(line_i)  for line_i in lines]
         for raw_i in tokens:
             tree_i=parse_statement(raw_i)
-            print(tree_i)
-#        return tokens
+            print("***********")
+            tree_i.print()
 
 def tokenize(line_i):
     tokens=[]
@@ -62,10 +81,6 @@ def tokenize(line_i):
             tokens.append(Token('var',raw_i))
     return Tokens(tokens)
 
-#def except_token(i,symbol,tokens):
-#    if(tokens[i].type!=symbol):
-#        raise Exception("Parser Error")
-
 def parse_statement(tokens):
     token_i=tokens.except_token(['read','set','print'])
     type_i=token_i.type
@@ -76,10 +91,31 @@ def parse_statement(tokens):
     if(type_i=="set"):
         var_token=tokens.except_token(['var'])
         tokens.except_token(['='])
-        return ASTLeaf('set',tokens.peek().value,expr=None)
+        expr_i=parse_expr(tokens)
+        return ASTLeaf('set',var_token.value,expr=expr_i)
 
 def parse_expr(tokens):
-    print("OK")#tokens)
+    result=parse_product(tokens)
+    while(tokens.next_token_is(['+','-'])):
+        op_token= tokens.shift()
+        result=ASTNode(op_token.type,result,parse_product(tokens))
+    return result
+    
+def parse_product(tokens):
+    result = parse_factor(tokens)
+    while(tokens.next_token_is(['*','/'])):
+        op_token= tokens.shift()
+        result=ASTNode(op_token.type,result,parse_factor(tokens))
+    return result
+
+def parse_factor(tokens):
+    token_i = tokens.except_token(['number','var','('])
+    if( token_i.type=='var' or token_i.type=='var' ):
+        return token_i
+    if(token_i.type=="("):
+        result=parse_expr(tokens)
+        tokens.except_token([")"])
+        return result
 
 in_path="../C/test.math"
 tokens=interpret(in_path)
