@@ -62,13 +62,16 @@ class ASTLeaf(object):
         return f"{self.type},{self.var}"
 
 def interpret(in_path):
+    envir={}
     with open(in_path) as txt_file:
         lines= txt_file.read().split('\n')
         tokens=[tokenize(line_i)  for line_i in lines]
         for raw_i in tokens:
             tree_i=parse_statement(raw_i)
-            print("***********")
-            tree_i.print()
+            evol_statement(tree_i,envir)
+            print(envir)
+#            print("***********")
+#            tree_i.print()
 
 def tokenize(line_i):
     tokens=[]
@@ -116,6 +119,17 @@ def parse_factor(tokens):
         result=parse_expr(tokens)
         tokens.except_token([")"])
         return result
+
+def evol_statement(tree_i,envir:dict):
+    if(tree_i.type=="read"):
+        var_i=tree_i.var
+        envir[var_i]=input(var_i)
+    if(tree_i.type=="print"):
+        var_i=tree_i.var
+        print(envir[var_i])
+    if(tree_i.type=="set"):
+        var_i=tree_i.var
+        envir[var_i]=3.14  
 
 in_path="../C/test.math"
 tokens=interpret(in_path)
