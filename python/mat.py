@@ -68,10 +68,8 @@ def interpret(in_path):
         tokens=[tokenize(line_i)  for line_i in lines]
         for raw_i in tokens:
             tree_i=parse_statement(raw_i)
-            evol_statement(tree_i,envir)
+            eval_statement(tree_i,envir)
             print(envir)
-#            print("***********")
-#            tree_i.print()
 
 def tokenize(line_i):
     tokens=[]
@@ -100,36 +98,53 @@ def parse_statement(tokens):
 def parse_expr(tokens):
     result=parse_product(tokens)
     while(tokens.next_token_is(['+','-'])):
+        type_i=tokens.peek().type
         op_token= tokens.shift()
-        result=ASTNode(op_token.type,result,parse_product(tokens))
+        result=ASTNode(type_i,result,parse_product(tokens))
     return result
     
 def parse_product(tokens):
     result = parse_factor(tokens)
     while(tokens.next_token_is(['*','/'])):
+        type_i=tokens.peek().type
         op_token= tokens.shift()
-        result=ASTNode(op_token.type,result,parse_factor(tokens))
+        result=ASTNode(type_i,result,parse_factor(tokens))
     return result
 
 def parse_factor(tokens):
     token_i = tokens.except_token(['number','var','('])
-    if( token_i.type=='var' or token_i.type=='var' ):
+    if( token_i.type=='var' or token_i.type=='number' ):
         return token_i
     if(token_i.type=="("):
         result=parse_expr(tokens)
         tokens.except_token([")"])
         return result
 
-def evol_statement(tree_i,envir:dict):
+def eval_statement(tree_i,envir:dict):
     if(tree_i.type=="read"):
         var_i=tree_i.var
-        envir[var_i]=input(var_i)
+        envir[var_i]=float(input(var_i))
     if(tree_i.type=="print"):
         var_i=tree_i.var
-        print(envir[var_i])
     if(tree_i.type=="set"):
         var_i=tree_i.var
-        envir[var_i]=3.14  
+        envir[var_i]=eval_expr(tree_i.expr,envir)
 
+def eval_expr(tree_i,envir:dict):
+    if(tree_i.type=='number'):
+        return tree_i.value
+    if(tree_i.type=='var'):
+        return envir[tree_i.value]
+    if(tree_i.type=='*'):
+        left=eval_expr(tree_i.left,envir)
+        right=eval_expr(tree_i.right,envir)
+        return left * right
+    if(tree_i.type=='/'):
+        return eval_expr(tree_i.left,envir) / eval_expr(tree_i.right,envir)    
+    if(tree_i.type=='-'):
+        return eval_expr(tree_i.left,envir) - eval_expr(tree_i.right,envir)     
+    if(tree_i.type=='+'):
+        return eval_expr(tree_i.left,envir) + eval_expr(tree_i.right,envir) 
+    return 0
 in_path="../C/test.math"
 tokens=interpret(in_path)
