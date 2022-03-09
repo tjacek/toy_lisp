@@ -1,25 +1,32 @@
 #include "math.h"
 
+Token::Token(std::string str){
+  this->type=VAR;
+  this->data=str;
+}
 
-NumberToken::NumberToken(double value){
+Token::Token(float x){
   this->type=NUMBER;
-  this->value=value;
+  this->data=x;
 }
 
-std::string NumberToken::to_str(){
-  return std::to_string(this->value);
-}
-
-StringToken::StringToken(TokenType type,std::string value){
+Token::Token(TokenType type){
   this->type=type;
-  this->value=value;
+  this->data=0.0;
 }
 
-std::string StringToken::to_str(){
-  return this->value;
+std::string Token::to_str(){
+  if(this->type==VAR){
+    return std::get<std::string>(this->data);
+  }
+  if(this->type==NUMBER){
+    float value= std::get<float>(this->data);
+    return std::to_string(value);
+  }
+  return "";
 }
 
-void parse(std::string in_path){
+/*void parse(std::string in_path){
   std::ifstream infile(in_path);
   std::string line;
   std::vector<Line> lines;
@@ -62,7 +69,6 @@ void print_lines(std::vector<Line> & lines){
 }
 
 ASTree * parse_statement(Line &line){
-//  Token* token_i=line.at(0);
   std::cout << is_token(0,"read",line);
   return NULL;
 }
@@ -74,10 +80,10 @@ bool is_token(int i,std::string symbol,Line & line){
  }
  StringToken * str_token=(StringToken*) token_i;
  return str_token->value.compare(symbol)==0;
-}
+}*/
 
 
 int main(){
   //Token a(5.0);
-  parse("test.math");
+  //parse("test.math");
 }
