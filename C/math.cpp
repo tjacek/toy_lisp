@@ -26,13 +26,13 @@ std::string Token::to_str(){
   return "";
 }
 
-/*void parse(std::string in_path){
+void parse(std::string in_path){
   std::ifstream infile(in_path);
   std::string line;
   std::vector<Line> lines;
   while (std::getline(infile, line)){
     Line tokens= tokenize(line);
-    parse_statement(tokens);
+//    parse_statement(tokens);
     lines.push_back(tokens);
   }
   print_lines(lines);
@@ -46,12 +46,22 @@ Line tokenize(std::string line){
     std::string str_i=*iter;
     Token* token_i;
     if(std::regex_match (str_i,number_reg)){
-      double value=atof(str_i.c_str());
-      token_i= new NumberToken(value);
+      float value=atof(str_i.c_str());
+      token_i= new Token(value);
     } else if(std::regex_match (str_i,var_reg)){
-      token_i=new StringToken(VAR,str_i);
+      token_i=new Token(str_i);
     } else if(std::regex_match (str_i,command_reg)){
-      token_i = new StringToken(COMMAND,str_i);
+      if(str_i.compare("=")==0){
+        token_i = new Token(EQUAL);
+      } else if(str_i.compare("+")==0){
+        token_i=new Token(PLUS);
+      } else if(str_i.compare("-")==0){
+        token_i=new Token(MINUS);
+      } else if(str_i.compare("*")==0){
+        token_i=new Token(MULT);
+      } else if(str_i.compare("/")==0){
+        token_i=new Token(DIVIDE);
+      }
     }
     tokens.push_back(token_i);
   }
@@ -68,7 +78,7 @@ void print_lines(std::vector<Line> & lines){
   }
 }
 
-ASTree * parse_statement(Line &line){
+/*ASTree * parse_statement(Line &line){
   std::cout << is_token(0,"read",line);
   return NULL;
 }
@@ -82,8 +92,6 @@ bool is_token(int i,std::string symbol,Line & line){
  return str_token->value.compare(symbol)==0;
 }*/
 
-
 int main(){
-  //Token a(5.0);
-  //parse("test.math");
+  parse("test.math");
 }

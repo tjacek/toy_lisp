@@ -8,7 +8,7 @@
 #ifndef MATH
 #define MATH
 
-enum TokenType {NUMBER,VAR};
+enum TokenType {NUMBER,VAR,EQUAL,PLUS,MINUS,DIVIDE,MULT};
 
 const static std::regex ws_reg("\\s+");
 const static std::regex number_reg("-?\\d+(\\.\\d+)?");
