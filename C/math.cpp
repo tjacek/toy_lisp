@@ -23,7 +23,21 @@ std::string Token::to_str(){
     float value= std::get<float>(this->data);
     return std::to_string(value);
   }
-  return "";
+  return std::string(type_to_str(this->type));
+}
+
+constexpr const char* type_to_str(TokenType type_i){
+    switch (type_i)
+    {
+        case TokenType::NUMBER: return "Number";
+        case TokenType::VAR: return "Variable";
+        case TokenType::EQUAL: return "=";
+        case TokenType::PLUS: return "+";
+        case TokenType::MINUS: return "-";
+        case TokenType::DIVIDE: return "/";
+        case TokenType::MULT: return "*";
+        default: return "unknown";
+    }
 }
 
 void parse(std::string in_path){

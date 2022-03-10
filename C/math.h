@@ -28,7 +28,7 @@ class Token{
 typedef std::vector<Token*> Line;
 Line tokenize(std::string line);
 void print_lines(std::vector<Line> & lines);
-bool is_token(int i,std::string symbol,Line & line);
+constexpr const char* type_to_str(TokenType type_i);
 
 enum ASTreeType {SET,READ,PRINT};
 
