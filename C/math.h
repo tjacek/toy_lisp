@@ -3,7 +3,6 @@
 #include <sstream>
 #include <fstream>
 #include <regex>
-#include <list>
 #include <variant>
 #include <memory>
 #ifndef MATH
@@ -40,8 +39,7 @@ class TokenSeq{
 
 typedef std::shared_ptr<TokenSeq> TokenSeqPtr;
 TokenSeqPtr tokenize(std::string line);
-//void print_lines(std::vector<Line> & lines);
-
+void print_lines(std::vector<TokenSeqPtr> & lines);
 
 enum ASTreeType {SET,READ,PRINT};
 
