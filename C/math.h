@@ -5,6 +5,7 @@
 #include <regex>
 #include <list>
 #include <variant>
+#include <memory>
 #ifndef MATH
 #define MATH
 
@@ -25,20 +26,32 @@ class Token{
     std::string to_str();
 };
 
-typedef std::vector<Token*> Line;
-Line tokenize(std::string line);
-void print_lines(std::vector<Line> & lines);
 constexpr const char* type_to_str(TokenType type_i);
+
+class TokenSeq{
+  private:
+    std::vector<Token*> tokens;
+    int current=0;
+  
+  public:
+    void add(Token * token);
+    void print();
+};
+
+typedef std::shared_ptr<TokenSeq> TokenSeqPtr;
+TokenSeqPtr tokenize(std::string line);
+//void print_lines(std::vector<Line> & lines);
+
 
 enum ASTreeType {SET,READ,PRINT};
 
-class ASTree{
+/*class ASTree{
   public:
     ASTreeType type;
     ASTree *left;
     ASTree *right;
 };
 
-ASTree * parse_statement(Line & line);
+ASTree * parse_statement(Line & line);*/
 
 #endif

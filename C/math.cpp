@@ -40,22 +40,27 @@ constexpr const char* type_to_str(TokenType type_i){
     }
 }
 
+void TokenSeq::add(Token * token){
+  this->tokens.push_back(token);
+}
+
 void parse(std::string in_path){
   std::ifstream infile(in_path);
   std::string line;
-  std::vector<Line> lines;
+//  std::vector<Line> lines;
   while (std::getline(infile, line)){
-    Line tokens= tokenize(line);
+    TokenSeqPtr tokens= tokenize(line);
 //    parse_statement(tokens);
-    lines.push_back(tokens);
+//    lines.push_back(tokens);
   }
-  print_lines(lines);
+//  print_lines(lines);
 }
 
-Line tokenize(std::string line){
+TokenSeqPtr tokenize(std::string line){
   std::sregex_token_iterator iter(line.begin(),line.end(),ws_reg,-1);
   std::sregex_token_iterator end;
-  Line tokens;
+//  std::vector<Token*> tokens;
+  TokenSeqPtr tokens=TokenSeqPtr(new TokenSeq());
   for ( ; iter != end; ++iter){
     std::string str_i=*iter;
     Token* token_i;
@@ -77,12 +82,12 @@ Line tokenize(std::string line){
         token_i=new Token(DIVIDE);
       }
     }
-    tokens.push_back(token_i);
+    tokens->add(token_i);
   }
   return tokens;
 }
 
-void print_lines(std::vector<Line> & lines){
+/*void print_lines(std::vector<Line> & lines){
   for (auto it = lines.begin(); it != lines.end(); ++it) {
     for (auto token = it->begin(); token != it->end(); ++token) {
       Token* token_j=(*token);
@@ -90,7 +95,7 @@ void print_lines(std::vector<Line> & lines){
     }
     std::cout << std::endl;
   }
-}
+}*/
 
 /*ASTree * parse_statement(Line &line){
   std::cout << is_token(0,"read",line);
