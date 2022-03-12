@@ -36,17 +36,32 @@ constexpr const char* type_to_str(TokenType type_i){
         case TokenType::MINUS: return "-";
         case TokenType::DIVIDE: return "/";
         case TokenType::MULT: return "*";
+        case TokenType::READ: return "read";        
+        case TokenType::SET: return "set";
+        case TokenType::PRINT: return "print";
         default: return "unknown";
     }
 }
 
-void TokenSeq::add(Token * token){
+void TokenSeq::add(TokenPtr token){
   this->tokens.push_back(token);
 }
 
+void TokenSeq::shift(){
+  this->current++;
+}
+
 void TokenSeq::print(){
-  for (auto it = this->tokens.begin(); it != this->tokens.end(); ++it) {
-    Token* token_j=(*it);
+  this->print(0);
+}
+
+void TokenSeq::print_current(){
+  this->print(this->current);
+}
+
+void TokenSeq::print(int i){
+  for (auto it = this->tokens.begin()+i; it != this->tokens.end(); ++it) {
+    TokenPtr token_j=(*it);
     std::cout << token_j->to_str() << " ";
   }
 }
@@ -69,33 +84,45 @@ TokenSeqPtr tokenize(std::string line){
   TokenSeqPtr tokens=TokenSeqPtr(new TokenSeq());
   for ( ; iter != end; ++iter){
     std::string str_i=*iter;
-    Token* token_i;
-    if(std::regex_match (str_i,number_reg)){
+    TokenPtr token_i;
+    if(std::regex_match (str_i,command_reg)){
+      token_i=get_inst(str_i);
+    } else if(std::regex_match (str_i,number_reg)){
       float value=atof(str_i.c_str());
-      token_i= new Token(value);
+      token_i= TokenPtr(new Token(value));
     } else if(std::regex_match (str_i,var_reg)){
-      token_i=new Token(str_i);
-    } else if(std::regex_match (str_i,command_reg)){
-      if(str_i.compare("=")==0){
-        token_i = new Token(EQUAL);
-      } else if(str_i.compare("+")==0){
-        token_i=new Token(PLUS);
-      } else if(str_i.compare("-")==0){
-        token_i=new Token(MINUS);
-      } else if(str_i.compare("*")==0){
-        token_i=new Token(MULT);
-      } else if(str_i.compare("/")==0){
-        token_i=new Token(DIVIDE);
-      }
-    }
+      token_i= TokenPtr(new Token(str_i));
+    } 
     tokens->add(token_i);
   }
   return tokens;
 }
 
+TokenPtr get_inst(std::string str_i){
+  Token * token_i;
+  if(str_i.compare("read")==0){
+    token_i= new Token(READ);
+  } else if(str_i.compare("set")==0){
+    token_i= new Token(SET);
+  } else if(str_i.compare("print")==0){
+    token_i= new Token(PRINT);
+  } else if(str_i.compare("=")==0){
+      token_i= new Token(EQUAL);
+  } else if(str_i.compare("+")==0){
+      token_i= new Token(PLUS);
+  } else if(str_i.compare("-")==0){
+      token_i= new Token(MINUS);
+  } else if(str_i.compare("*")==0){
+      token_i=new Token(MULT);
+  } else if(str_i.compare("/")==0){
+      token_i=new Token(DIVIDE);
+  }
+  return TokenPtr(token_i);
+}
+
 void print_lines(std::vector<TokenSeqPtr> & lines){
   for (auto it = lines.begin(); it != lines.end(); ++it) {
-    (*it)->print();
+    (*it)->print_current();
     std::cout << std::endl;
   }
 }

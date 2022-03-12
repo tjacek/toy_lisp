@@ -8,7 +8,8 @@
 #ifndef MATH
 #define MATH
 
-enum TokenType {NUMBER,VAR,EQUAL,PLUS,MINUS,DIVIDE,MULT};
+enum TokenType {NUMBER,VAR,EQUAL,SET,PRINT,READ,
+    PLUS,MINUS,DIVIDE,MULT};
 
 const static std::regex ws_reg("\\s+");
 const static std::regex number_reg("-?\\d+(\\.\\d+)?");
@@ -25,23 +26,27 @@ class Token{
     std::string to_str();
 };
 
+typedef std::shared_ptr<Token> TokenPtr;
 constexpr const char* type_to_str(TokenType type_i);
 
 class TokenSeq{
   private:
-    std::vector<Token*> tokens;
+    std::vector<TokenPtr> tokens;
     int current=0;
-  
+
   public:
-    void add(Token * token);
+
+    void add(TokenPtr token);
     void print();
+    void print(int i);
+    void print_current();
+    void shift();
 };
 
 typedef std::shared_ptr<TokenSeq> TokenSeqPtr;
 TokenSeqPtr tokenize(std::string line);
 void print_lines(std::vector<TokenSeqPtr> & lines);
-
-enum ASTreeType {SET,READ,PRINT};
+TokenPtr get_inst(std::string str_i);
 
 /*class ASTree{
   public:
