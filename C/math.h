@@ -35,7 +35,7 @@ class TokenSeq{
     int current=0;
 
   public:
-
+    TokenPtr peek();
     void add(TokenPtr token);
     void print();
     void print(int i);
@@ -48,13 +48,14 @@ TokenSeqPtr tokenize(std::string line);
 void print_lines(std::vector<TokenSeqPtr> & lines);
 TokenPtr get_inst(std::string str_i);
 
-/*class ASTree{
+class Statement{
   public:
-    ASTreeType type;
-    ASTree *left;
-    ASTree *right;
+    TokenType type;
+    std::string var;
+    Statement(TokenType type,std::string var);
 };
 
-ASTree * parse_statement(Line & line);*/
-
+typedef std::shared_ptr<Statement> StatementPtr;
+StatementPtr parse_statement(TokenSeqPtr & tokens);
+bool is_statement(TokenType type);
 #endif

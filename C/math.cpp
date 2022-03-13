@@ -43,6 +43,11 @@ constexpr const char* type_to_str(TokenType type_i){
     }
 }
 
+TokenPtr TokenSeq::peek(){
+  return this->tokens[this->current];
+}
+
+
 void TokenSeq::add(TokenPtr token){
   this->tokens.push_back(token);
 }
@@ -72,7 +77,7 @@ void parse(std::string in_path){
   std::vector<TokenSeqPtr> lines;
   while (std::getline(infile, line)){
     TokenSeqPtr tokens= tokenize(line);
-//    parse_statement(tokens);
+    parse_statement(tokens);
     lines.push_back(tokens);
   }
   print_lines(lines);
@@ -127,19 +132,26 @@ void print_lines(std::vector<TokenSeqPtr> & lines){
   }
 }
 
-/*ASTree * parse_statement(Line &line){
-  std::cout << is_token(0,"read",line);
-  return NULL;
+Statement::Statement(TokenType type,std::string var){
+  this->type=type;
+  this->var=var;
 }
 
-bool is_token(int i,std::string symbol,Line & line){
- Token * token_i=line.at(i);
- if(token_i->type==NUMBER){
-   return false;
- }
- StringToken * str_token=(StringToken*) token_i;
- return str_token->value.compare(symbol)==0;
-}*/
+StatementPtr parse_statement(TokenSeqPtr  tokens){
+  Statement * statement;
+//  TokenPtr token_i=tokens->peek();
+//  if(is_statement(token_i->type)){
+//      TokenType type_i=token_i->type;
+//      tokens->shift();
+//      std::string var_i=tokens->peek()->to_str(); 
+//      statement=new Statement(type_i,var_i); 
+//  }
+  return StatementPtr(statement);
+}
+
+bool is_statement(TokenType type){
+  return (type==SET || type==READ || type==PRINT);
+}
 
 int main(){
   parse("test.math");
