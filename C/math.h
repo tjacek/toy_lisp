@@ -5,6 +5,7 @@
 #include <regex>
 #include <variant>
 #include <memory>
+#include <optional>
 #ifndef MATH
 #define MATH
 
@@ -13,7 +14,7 @@ enum TokenType {NUMBER,VAR,EQUAL,SET,PRINT,READ,
 
 const static std::regex ws_reg("\\s+");
 const static std::regex number_reg("-?\\d+(\\.\\d+)?");
-const static std::regex command_reg("[\\+\\-\\*\\/=()]|set|read|print/");
+const static std::regex command_reg("[\\+\\-\\*\\/=()]|set|read|print");
 const static std::regex var_reg("[a-zA-Z][a-zA-Z0-9]*");
 
 class Token{
@@ -52,10 +53,12 @@ class Statement{
   public:
     TokenType type;
     std::string var;
+    std::optional<std::string> expr;
     Statement(TokenType type,std::string var);
+    std::string to_str();
 };
 
 typedef std::shared_ptr<Statement> StatementPtr;
-StatementPtr parse_statement(TokenSeqPtr & tokens);
+StatementPtr parse_statement(const TokenSeqPtr & tokens);
 bool is_statement(TokenType type);
 #endif

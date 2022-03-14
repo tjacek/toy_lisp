@@ -77,10 +77,11 @@ void parse(std::string in_path){
   std::vector<TokenSeqPtr> lines;
   while (std::getline(infile, line)){
     TokenSeqPtr tokens= tokenize(line);
-    parse_statement(tokens);
+    StatementPtr stat_i= parse_statement(tokens);
+    std::cout << stat_i->to_str() << std::endl;
     lines.push_back(tokens);
   }
-  print_lines(lines);
+//  print_lines(lines);
 }
 
 TokenSeqPtr tokenize(std::string line){
@@ -137,20 +138,26 @@ Statement::Statement(TokenType type,std::string var){
   this->var=var;
 }
 
-StatementPtr parse_statement(TokenSeqPtr  tokens){
-  Statement * statement;
-//  TokenPtr token_i=tokens->peek();
-//  if(is_statement(token_i->type)){
-//      TokenType type_i=token_i->type;
-//      tokens->shift();
-//      std::string var_i=tokens->peek()->to_str(); 
-//      statement=new Statement(type_i,var_i); 
-//  }
+std::string Statement::to_str(){
+  return type_to_str(this->type);
+}
+
+StatementPtr parse_statement(const TokenSeqPtr & tokens){
+  Statement * statement=NULL;
+  TokenPtr token_i=tokens->peek();
+  if(is_statement(token_i->type)){
+    TokenType type_i=token_i->type;
+      tokens->shift();
+      std::string var_i=tokens->peek()->to_str(); 
+      statement=new Statement(type_i,var_i); 
+  }else{
+    std::cout << "ERROR " << (token_i->type) <<" " <<VAR << std::endl;
+  }
   return StatementPtr(statement);
 }
 
 bool is_statement(TokenType type){
-  return (type==SET || type==READ || type==PRINT);
+  return ( (type==SET || type==READ) || type==PRINT);
 }
 
 int main(){
