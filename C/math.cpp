@@ -75,10 +75,12 @@ void parse(std::string in_path){
   std::ifstream infile(in_path);
   std::string line;
   std::vector<TokenSeqPtr> lines;
+  Envir envir;
   while (std::getline(infile, line)){
     TokenSeqPtr tokens= tokenize(line);
     StatementPtr stat_i= parse_statement(tokens);
-    std::cout << stat_i->to_str() << std::endl;
+//    std::cout << stat_i->to_str() << std::endl;
+    eval_statment(stat_i,envir);
     lines.push_back(tokens);
   }
 //  print_lines(lines);
@@ -151,7 +153,7 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
       std::string var_i=tokens->peek()->to_str(); 
       statement=new Statement(type_i,var_i); 
   }else{
-    std::cout << "ERROR " << (token_i->type) <<" " <<VAR << std::endl;
+    std::cout << "ERROR " << (token_i->type) << std::endl;
   }
   return StatementPtr(statement);
 }
@@ -159,6 +161,21 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
 bool is_statement(TokenType type){
   return ( (type==SET || type==READ) || type==PRINT);
 }
+
+void eval_statment(StatementPtr statement, Envir & envir){
+  if(statement->type==READ){
+    int value;
+    std::cin >> value;
+    envir[statement->var]=value;
+  }
+  if(statement->type==SET){
+    envir[statement->var]=0.0;
+  }
+  if(statement->type==PRINT){
+    std::cout << envir[statement->var] << std::endl;
+  }
+}
+
 
 int main(){
   parse("test.math");
