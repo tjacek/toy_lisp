@@ -49,18 +49,22 @@ TokenSeqPtr tokenize(std::string line);
 void print_lines(std::vector<TokenSeqPtr> & lines);
 TokenPtr get_inst(std::string str_i);
 
+class Expr{
+  public:
+    bool is_leaf;
+    TokenType type;
+    std::variant<TokenPtr,std::pair<Expr*,Expr*>> data;
+};
+
+typedef std::shared_ptr<Expr> ExprPtr;
+
 class Statement{
   public:
     TokenType type;
     std::string var;
-    std::optional<std::string> expr;
+    std::optional<ExprPtr> expr;
     Statement(TokenType type,std::string var);
     std::string to_str();
-};
-
-class Expr{
-  public:
-    TokenType type;
 };
 
 typedef std::map<std::string,float> Envir;

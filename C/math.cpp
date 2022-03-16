@@ -158,6 +158,11 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
   return StatementPtr(statement);
 }
 
+ExprPtr parse_expr(){
+  Expr * expr=NULL;
+  return ExprPtr(expr);
+}
+
 bool is_statement(TokenType type){
   return ( (type==SET || type==READ) || type==PRINT);
 }
