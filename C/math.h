@@ -36,6 +36,8 @@ class TokenSeq{
     int current=0;
 
   public:
+    bool next_token_is(std::vector<TokenType> & types);
+    TokenPtr except_token(std::vector<TokenType> & types);
     TokenPtr peek();
     void add(TokenPtr token);
     void print();

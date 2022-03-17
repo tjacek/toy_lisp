@@ -26,6 +26,27 @@ std::string Token::to_str(){
   return std::string(type_to_str(this->type));
 }
 
+bool TokenSeq::next_token_is(std::vector<TokenType> & types){
+  TokenPtr token=this->peek();
+  for(auto it = types.begin(); it != types.end(); ++it) {
+    TokenType type_i=(*it);
+    if(token->type==type_i){
+      return true;
+    }
+  }
+  return false;
+}
+
+TokenPtr TokenSeq::except_token(std::vector<TokenType> & types){
+  TokenPtr token=this->peek();
+  if(!this->next_token_is(types)){
+    throw "Parser error";
+  }
+  this->shift();
+  return token;
+}
+
+
 constexpr const char* type_to_str(TokenType type_i){
     switch (type_i)
     {
