@@ -46,7 +46,6 @@ TokenPtr TokenSeq::except_token(std::vector<TokenType> & types){
   return token;
 }
 
-
 constexpr const char* type_to_str(TokenType type_i){
     switch (type_i)
     {
@@ -170,15 +169,6 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
   std::vector<TokenType> types = {READ,SET,PRINT};
   TokenPtr token_i=tokens->except_token(types);
   statement=new Statement(token_i->type,token_i->to_str());
-/*  TokenPtr token_i=tokens->peek();
-  if(is_statement(token_i->type)){
-    TokenType type_i=token_i->type;
-      tokens->shift();
-      std::string var_i=tokens->peek()->to_str(); 
-      statement=new Statement(type_i,var_i); 
-  }else{
-    std::cout << "ERROR " << (token_i->type) << std::endl;
-  }*/
   return StatementPtr(statement);
 }
 
@@ -204,7 +194,6 @@ void eval_statment(StatementPtr statement, Envir & envir){
     std::cout << envir[statement->var] << std::endl;
   }
 }
-
 
 int main(){
   parse("test.math");
