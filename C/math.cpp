@@ -167,7 +167,10 @@ std::string Statement::to_str(){
 
 StatementPtr parse_statement(const TokenSeqPtr & tokens){
   Statement * statement=NULL;
-  TokenPtr token_i=tokens->peek();
+  std::vector<TokenType> types = {READ,SET,PRINT};
+  TokenPtr token_i=tokens->except_token(types);
+  statement=new Statement(token_i->type,token_i->to_str());
+/*  TokenPtr token_i=tokens->peek();
   if(is_statement(token_i->type)){
     TokenType type_i=token_i->type;
       tokens->shift();
@@ -175,7 +178,7 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
       statement=new Statement(type_i,var_i); 
   }else{
     std::cout << "ERROR " << (token_i->type) << std::endl;
-  }
+  }*/
   return StatementPtr(statement);
 }
 
