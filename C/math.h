@@ -38,6 +38,8 @@ class TokenSeq{
   public:
     bool next_token_is(std::vector<TokenType> & types);
     TokenPtr except_token(std::vector<TokenType> & types);
+    TokenPtr except_token(TokenType type);
+
     TokenPtr peek();
     void add(TokenPtr token);
     void print();
@@ -66,6 +68,7 @@ class Statement{
     std::string var;
     std::optional<ExprPtr> expr;
     Statement(TokenType type,std::string var);
+    Statement(TokenType type,std::string var,ExprPtr expr);
     std::string to_str();
 };
 

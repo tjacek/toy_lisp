@@ -37,6 +37,11 @@ bool TokenSeq::next_token_is(std::vector<TokenType> & types){
   return false;
 }
 
+TokenPtr TokenSeq::except_token(TokenType type){
+  std::vector<TokenType> types={type};
+  return this->except_token(types);
+}
+
 TokenPtr TokenSeq::except_token(std::vector<TokenType> & types){
   TokenPtr token=this->peek();
   if(!this->next_token_is(types)){
@@ -160,6 +165,12 @@ Statement::Statement(TokenType type,std::string var){
   this->var=var;
 }
 
+Statement::Statement(TokenType type,std::string var,ExprPtr expr){
+  this->type=type;
+  this->var=var;
+  this->expr=expr;
+}
+
 std::string Statement::to_str(){
   return type_to_str(this->type);
 }
@@ -168,7 +179,15 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
   Statement * statement=NULL;
   std::vector<TokenType> types = {READ,SET,PRINT};
   TokenPtr token_i=tokens->except_token(types);
-  statement=new Statement(token_i->type,token_i->to_str());
+  if(token_i->type==SET){
+    tokens->except_token(VAR);
+    tokens->except_token(EQUAL);
+    ExprPtr expr(NULL);
+//    tokens->print_current();
+    statement=new Statement(token_i->type,token_i->to_str(),expr);
+  }else{
+      statement=new Statement(token_i->type,token_i->to_str());
+  }
   return StatementPtr(statement);
 }
 
