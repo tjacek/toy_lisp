@@ -72,7 +72,6 @@ TokenPtr TokenSeq::peek(){
   return this->tokens[this->current];
 }
 
-
 void TokenSeq::add(TokenPtr token){
   this->tokens.push_back(token);
 }
@@ -160,6 +159,10 @@ void print_lines(std::vector<TokenSeqPtr> & lines){
   }
 }
 
+Expr::Expr(TokenType type,Expr* left,Expr* right){
+  this->type;
+}
+
 Statement::Statement(TokenType type,std::string var){
   this->type=type;
   this->var=var;
@@ -182,7 +185,7 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
   if(token_i->type==SET){
     std::string var_i= tokens->except_token(VAR)->to_str();
     tokens->except_token(EQUAL);
-    ExprPtr expr(NULL);
+    ExprPtr expr=parse_expr(tokens);
 //    tokens->print_current();
     statement=new Statement(token_i->type,var_i,expr);
   }else{
@@ -192,8 +195,15 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
   return StatementPtr(statement);
 }
 
-ExprPtr parse_expr(){
+ExprPtr parse_expr(const TokenSeqPtr & tokens){
   Expr * expr=NULL;
+  std::vector<TokenType> types = {PLUS,MINUS};
+  while( tokens->except_token(types)){
+    TokenType type_i=tokens->peek()->type;
+    tokens->shift();
+//    expr=new Expr(type_i,expr,NULL);
+  }
+  tokens->print_current();
   return ExprPtr(expr);
 }
 

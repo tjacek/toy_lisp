@@ -58,6 +58,7 @@ class Expr{
     bool is_leaf;
     TokenType type;
     std::variant<TokenPtr,std::pair<Expr*,Expr*>> data;
+    Expr(TokenType type,Expr* left,Expr* right);
 };
 
 typedef std::shared_ptr<Expr> ExprPtr;
@@ -74,6 +75,8 @@ class Statement{
 
 typedef std::shared_ptr<Statement> StatementPtr;
 StatementPtr parse_statement(const TokenSeqPtr & tokens);
+ExprPtr parse_expr(const TokenSeqPtr & tokens);
+
 bool is_statement(TokenType type);
 
 typedef std::map<std::string,float> Envir;
