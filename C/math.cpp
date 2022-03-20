@@ -180,13 +180,14 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
   std::vector<TokenType> types = {READ,SET,PRINT};
   TokenPtr token_i=tokens->except_token(types);
   if(token_i->type==SET){
-    tokens->except_token(VAR);
+    std::string var_i= tokens->except_token(VAR)->to_str();
     tokens->except_token(EQUAL);
     ExprPtr expr(NULL);
 //    tokens->print_current();
-    statement=new Statement(token_i->type,token_i->to_str(),expr);
+    statement=new Statement(token_i->type,var_i,expr);
   }else{
-      statement=new Statement(token_i->type,token_i->to_str());
+      std::string var_i=tokens->peek()->to_str();
+      statement=new Statement(token_i->type,var_i);
   }
   return StatementPtr(statement);
 }
