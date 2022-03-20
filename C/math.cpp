@@ -104,8 +104,8 @@ void parse(std::string in_path){
   while (std::getline(infile, line)){
     TokenSeqPtr tokens= tokenize(line);
     StatementPtr stat_i= parse_statement(tokens);
-//    std::cout << stat_i->to_str() << std::endl;
     eval_statment(stat_i,envir);
+    print_envir(envir);
     lines.push_back(tokens);
   }
 //  print_lines(lines);
@@ -198,6 +198,13 @@ ExprPtr parse_expr(){
 
 bool is_statement(TokenType type){
   return ( (type==SET || type==READ) || type==PRINT);
+}
+
+void print_envir(Envir & envir){
+  for(const auto& [key, value] : envir) {
+    std::cout << '[' << key << "] = " << value << ";";
+  }
+  std::cout << std::endl;
 }
 
 void eval_statment(StatementPtr statement, Envir & envir){

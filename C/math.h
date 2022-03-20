@@ -72,12 +72,13 @@ class Statement{
     std::string to_str();
 };
 
-typedef std::map<std::string,float> Envir;
-
 typedef std::shared_ptr<Statement> StatementPtr;
 StatementPtr parse_statement(const TokenSeqPtr & tokens);
 bool is_statement(TokenType type);
 
+typedef std::map<std::string,float> Envir;
+
+void print_envir(Envir & envir);
 void eval_statment(StatementPtr statement, Envir & envir);
 
 #endif
