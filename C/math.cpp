@@ -185,7 +185,7 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
   if(token_i->type==SET){
     std::string var_i= tokens->except_token(VAR)->to_str();
     tokens->except_token(EQUAL);
-    ExprPtr expr=parse_expr(tokens);
+    ExprPtr expr=NULL; //parse_expr(tokens);
 //    tokens->print_current();
     statement=new Statement(token_i->type,var_i,expr);
   }else{
@@ -205,10 +205,6 @@ ExprPtr parse_expr(const TokenSeqPtr & tokens){
   }
   tokens->print_current();
   return ExprPtr(expr);
-}
-
-bool is_statement(TokenType type){
-  return ( (type==SET || type==READ) || type==PRINT);
 }
 
 void print_envir(Envir & envir){
