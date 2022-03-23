@@ -10,7 +10,7 @@
 #define MATH
 
 enum TokenType {NUMBER,VAR,EQUAL,SET,PRINT,READ,
-    PLUS,MINUS,DIVIDE,MULT};
+    PLUS,MINUS,DIVIDE,MULT,BRACKET};
 
 const static std::regex ws_reg("\\s+");
 const static std::regex number_reg("-?\\d+(\\.\\d+)?");
@@ -62,6 +62,7 @@ class Expr{
     TokenType type;
     std::variant<TokenPtr,ptr_pair<Expr>> data;
     Expr(TokenType type,Expr* left,Expr* right);
+    Expr(TokenPtr token);
 };
 
 typedef std::shared_ptr<Expr> ExprPtr;
@@ -79,6 +80,7 @@ class Statement{
 typedef std::shared_ptr<Statement> StatementPtr;
 StatementPtr parse_statement(const TokenSeqPtr & tokens);
 ExprPtr parse_expr(const TokenSeqPtr & tokens);
+ExprPtr parse_factor(const TokenSeqPtr & tokens);
 
 typedef std::map<std::string,float> Envir;
 
