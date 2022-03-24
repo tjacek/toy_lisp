@@ -61,7 +61,7 @@ class Expr{
     bool is_leaf;
     TokenType type;
     std::variant<TokenPtr,ptr_pair<Expr>> data;
-    Expr(TokenType type,Expr* left,Expr* right);
+    Expr(TokenType type,std::shared_ptr<Expr> left,std::shared_ptr<Expr> right);
     Expr(TokenPtr token);
 };
 

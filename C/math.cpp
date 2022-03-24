@@ -160,9 +160,10 @@ void print_lines(std::vector<TokenSeqPtr> & lines){
   }
 }
 
-Expr::Expr(TokenType type,Expr* left,Expr* right){
+Expr::Expr(TokenType type,ExprPtr left,ExprPtr right){
   this->is_leaf=false;
   this->type=type;
+  this->data=std::make_pair(left,right);
 }
 
 Expr::Expr(TokenPtr token){
@@ -204,16 +205,15 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
 }
 
 ExprPtr parse_expr(const TokenSeqPtr & tokens){
-  Expr * expr=NULL;
-  expr=parse_factor(tokens);
+  ExprPtr expr=parse_factor(tokens);
   std::vector<TokenType> types = {PLUS,MINUS};
-//  while( tokens->except_token(types)){
-//    TokenType type_i=tokens->peek()->type;
-//    tokens->shift();
-//    expr=new Expr(type_i,expr,NULL);
-//  }
+  while( tokens->except_token(types)){
+    TokenType type_i=tokens->peek()->type;
+    tokens->shift();
+    expr=ExprPtr(new Expr(type_i,expr,parse_factor(tokens)));
+  }
   tokens->print_current();
-  return ExprPtr(expr);
+  return expr;
 }
 
 ExprPtr parse_factor(const TokenSeqPtr & tokens){
