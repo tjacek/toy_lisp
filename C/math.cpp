@@ -172,6 +172,17 @@ Expr::Expr(TokenPtr token){
   this->data=token;
 }
 
+std::string Expr::to_str(){
+  if(this->is_leaf){
+    return type_to_str(this->type);
+  }else{
+    std::string rep="";
+    ptr_pair<Expr> pair = std::get<ptr_pair<Expr>>(this->data);
+    rep+=pair.first->to_str();
+  }
+  return "t";
+}
+
 Statement::Statement(TokenType type,std::string var){
   this->type=type;
   this->var=var;
@@ -195,7 +206,7 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
     std::string var_i= tokens->except_token(VAR)->to_str();
     tokens->except_token(EQUAL);
     ExprPtr expr=parse_expr(tokens);
-//    tokens->print_current();
+    std::cout << expr->to_str() << std::endl;
     statement=new Statement(token_i->type,var_i,expr);
   }else{
       std::string var_i=tokens->peek()->to_str();

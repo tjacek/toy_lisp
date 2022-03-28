@@ -63,6 +63,7 @@ class Expr{
     std::variant<TokenPtr,ptr_pair<Expr>> data;
     Expr(TokenType type,std::shared_ptr<Expr> left,std::shared_ptr<Expr> right);
     Expr(TokenPtr token);
+    std::string to_str();
 };
 
 typedef std::shared_ptr<Expr> ExprPtr;
