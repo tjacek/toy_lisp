@@ -81,6 +81,7 @@ class Statement{
 typedef std::shared_ptr<Statement> StatementPtr;
 StatementPtr parse_statement(const TokenSeqPtr & tokens);
 ExprPtr parse_expr(const TokenSeqPtr & tokens);
+ExprPtr parse_product(const TokenSeqPtr & tokens);
 ExprPtr parse_factor(const TokenSeqPtr & tokens);
 
 typedef std::map<std::string,float> Envir;

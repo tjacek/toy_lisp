@@ -45,7 +45,13 @@ TokenPtr TokenSeq::except_token(TokenType type){
 TokenPtr TokenSeq::except_token(std::vector<TokenType> & types){
   TokenPtr token=this->peek();
   if(!this->next_token_is(types)){
-    throw "Parser error";
+    std::string exc="Parser error. Excepted{";
+    for(auto it = types.begin(); it != types.end(); ++it) {
+      exc+=" ";
+      exc+=type_to_str(*it);
+    }
+    exc+= "} got "+ token->to_str();
+    throw exc;
   }
   this->shift();
   return token;
@@ -77,7 +83,9 @@ void TokenSeq::add(TokenPtr token){
 }
 
 void TokenSeq::shift(){
-  this->current++;
+  if(this->current < this->tokens.size()-1){
+    this->current++;
+  }
 }
 
 void TokenSeq::print(){
@@ -85,6 +93,7 @@ void TokenSeq::print(){
 }
 
 void TokenSeq::print_current(){
+  std::cout << this->current;
   this->print(this->current);
 }
 
@@ -101,10 +110,18 @@ void parse(std::string in_path){
   std::string line;
   std::vector<TokenSeqPtr> lines;
   Envir envir;
+  int line_counter=0;
   while (std::getline(infile, line)){
+    line_counter++;
     TokenSeqPtr tokens= tokenize(line);
-    StatementPtr stat_i= parse_statement(tokens);
-    eval_statment(stat_i,envir);
+    try{
+      StatementPtr stat_i= parse_statement(tokens);
+      eval_statment(stat_i,envir);
+    }catch(std::string e){
+       std::cout << "Line: " << line_counter << std::endl;
+       std::cout << e << std::endl;
+       return ; 
+    }    
     print_envir(envir);
     lines.push_back(tokens);
   }
@@ -178,9 +195,11 @@ std::string Expr::to_str(){
   }else{
     std::string rep="";
     ptr_pair<Expr> pair = std::get<ptr_pair<Expr>>(this->data);
-    rep+=pair.first->to_str();
+    rep+=" "+pair.first->to_str();
+    rep+=type_to_str(this->type);
+    rep+=" "+pair.second->to_str();
+    return rep;
   }
-  return "t";
 }
 
 Statement::Statement(TokenType type,std::string var){
@@ -216,14 +235,25 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
 }
 
 ExprPtr parse_expr(const TokenSeqPtr & tokens){
-  ExprPtr expr=parse_factor(tokens);
+  ExprPtr expr=parse_product(tokens);
   std::vector<TokenType> types = {PLUS,MINUS};
+  while( tokens->except_token(types)){
+    TokenType type_i=tokens->peek()->type;
+    tokens->shift();
+    expr=ExprPtr(new Expr(type_i,expr,parse_product(tokens)));
+  }
+  tokens->print_current();
+  return expr;
+}
+
+ExprPtr parse_product(const TokenSeqPtr & tokens){
+  ExprPtr expr=parse_factor(tokens);
+  std::vector<TokenType> types = {DIVIDE,MULT};
   while( tokens->except_token(types)){
     TokenType type_i=tokens->peek()->type;
     tokens->shift();
     expr=ExprPtr(new Expr(type_i,expr,parse_factor(tokens)));
   }
-  tokens->print_current();
   return expr;
 }
 
@@ -233,7 +263,7 @@ ExprPtr parse_factor(const TokenSeqPtr & tokens){
   TokenPtr token_i = tokens->except_token(types);
   if(token_i->type==VAR || token_i->type==NUMBER){
     expr=new Expr(token_i);
-  }      
+  }
   return ExprPtr(expr);
 }
 
