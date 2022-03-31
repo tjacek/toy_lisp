@@ -37,15 +37,18 @@ class TokenSeq{
 
   public:
     bool next_token_is(std::vector<TokenType> & types);
-    TokenPtr except_token(std::vector<TokenType> & types);
-    TokenPtr except_token(TokenType type);
-
+//    TokenPtr except_token(std::vector<TokenType> & types);
+//    TokenPtr except_token(TokenType type);
+    bool except_token(std::vector<TokenType> & types);
+    bool except_token(TokenType type);    
     TokenPtr peek();
     void add(TokenPtr token);
+    void shift();
+
     void print();
     void print(int i);
     void print_current();
-    void shift();
+    void print_types();
 };
 
 typedef std::shared_ptr<TokenSeq> TokenSeqPtr;
