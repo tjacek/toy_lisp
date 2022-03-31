@@ -93,7 +93,7 @@ bool TokenSeq::except_token(TokenType type){
 
 bool TokenSeq::except_token(std::vector<TokenType> & types){
   TokenPtr token=this->peek();
-  this->print_current();
+//  this->print_current();
   if(this->current== this->tokens.size()-1){
     return false;
   }
@@ -103,7 +103,7 @@ bool TokenSeq::except_token(std::vector<TokenType> & types){
     for(auto it = types.begin(); it != types.end(); ++it) {
       exc+=" ";
       exc+=type_to_str(*it);
-      std::cout <<"$";
+//      std::cout <<"$";
     }
     exc+= "} got "; 
     exc+= type_to_str(token->type);
@@ -132,7 +132,7 @@ void TokenSeq::print(){
 }
 
 void TokenSeq::print_current(){
-  std::cout << this->current;
+//  std::cout << this->current;
   this->print(this->current);
 }
 
@@ -235,6 +235,7 @@ std::string Statement::to_str(){
 
 StatementPtr parse_statement(const TokenSeqPtr & tokens){
   std::cout << "parse_statement" << std::endl;
+  tokens->print_current();
   Statement * statement=NULL;
   std::vector<TokenType> types = {READ,SET,PRINT};
   TokenPtr token_i=tokens->peek();
@@ -256,7 +257,7 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
 
 ExprPtr parse_expr(const TokenSeqPtr & tokens){
   std::cout << "parse_expr" << std::endl;
-
+  tokens->print_current();
   ExprPtr expr=parse_product(tokens);
   std::vector<TokenType> types = {PLUS,MINUS};
   while( tokens->except_token(types)){
@@ -269,24 +270,29 @@ ExprPtr parse_expr(const TokenSeqPtr & tokens){
 }
 
 ExprPtr parse_product(const TokenSeqPtr & tokens){
-   std::cout << "parse_product" << std::endl;
+  std::cout << "parse_product" << std::endl;
+  tokens->print_current();
 
   ExprPtr expr=parse_factor(tokens);
   std::vector<TokenType> types = {DIVIDE,MULT};
+  TokenType type_i=tokens->peek()->type;
   while( tokens->except_token(types)){
     TokenType type_i=tokens->peek()->type;
-    tokens->shift();
+//    tokens->shift();
     expr=ExprPtr(new Expr(type_i,expr,parse_factor(tokens)));
+
   }
   return expr;
 }
 
 ExprPtr parse_factor(const TokenSeqPtr & tokens){
-     std::cout << "parse_factor" << std::endl;
+  std::cout << "parse_factor" << std::endl;
+  tokens->print_current();
 
   Expr * expr=NULL;
   std::vector<TokenType> types = {NUMBER,VAR,BRACKET};
 
+//  TokenPtr token_i = tokens->peek();
   tokens->except_token(types);
   TokenPtr token_i = tokens->peek();
   if(token_i->type==VAR || token_i->type==NUMBER){
