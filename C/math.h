@@ -37,8 +37,6 @@ class TokenSeq{
 
   public:
     bool next_token_is(std::vector<TokenType> & types);
-//    TokenPtr except_token(std::vector<TokenType> & types);
-//    TokenPtr except_token(TokenType type);
     bool except_token(std::vector<TokenType> & types);
     bool except_token(TokenType type);    
     TokenPtr peek();
@@ -90,6 +88,7 @@ ExprPtr parse_factor(const TokenSeqPtr & tokens);
 typedef std::map<std::string,float> Envir;
 
 void print_envir(Envir & envir);
-void eval_statment(StatementPtr statement, Envir & envir);
+void eval_statment(const StatementPtr & statement, Envir & envir);
+float eval_expr(const ExprPtr & expr, Envir & envir);
 
 #endif

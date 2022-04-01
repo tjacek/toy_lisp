@@ -103,7 +103,6 @@ bool TokenSeq::except_token(std::vector<TokenType> & types){
     for(auto it = types.begin(); it != types.end(); ++it) {
       exc+=" ";
       exc+=type_to_str(*it);
-//      std::cout <<"$";
     }
     exc+= "} got "; 
     exc+= type_to_str(token->type);
@@ -211,9 +210,14 @@ std::string Expr::to_str(){
   }else{
     std::string rep="";
     ptr_pair<Expr> pair = std::get<ptr_pair<Expr>>(this->data);
-    rep+=" "+pair.first->to_str();
-    rep+=type_to_str(this->type);
-    rep+=" "+pair.second->to_str();
+    if(pair.first!=NULL){
+      rep+=" "+pair.first->to_str() +std::string( "\n");
+    }
+    rep+=type_to_str(this->type)+std::string("\n");
+    if(pair.second!=NULL){
+      rep+=" "+pair.second->to_str()+std::string("\n");
+    }
+
     return rep;
   }
 }
@@ -234,20 +238,22 @@ std::string Statement::to_str(){
 }
 
 StatementPtr parse_statement(const TokenSeqPtr & tokens){
-  std::cout << "parse_statement" << std::endl;
-  tokens->print_current();
+//  std::cout << "parse_statement" << std::endl;
+//  tokens->print_current();
   Statement * statement=NULL;
   std::vector<TokenType> types = {READ,SET,PRINT};
   TokenPtr token_i=tokens->peek();
 
   tokens->except_token(types);
   if(token_i->type==SET){
-    tokens->except_token(VAR);
     std::string var_i=tokens->peek()->to_str();
+    tokens->except_token(VAR);
     tokens->except_token(EQUAL);
     ExprPtr expr=parse_expr(tokens);
-//    std::cout << expr->to_str() << std::endl;
     statement=new Statement(token_i->type,var_i,expr);
+    std::cout << "*******************" << std::endl;
+    std::cout << expr->to_str();
+    std::cout << "*******************" << std::endl;
   }else{
       std::string var_i=tokens->peek()->to_str();
       statement=new Statement(token_i->type,var_i);
@@ -256,8 +262,8 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
 }
 
 ExprPtr parse_expr(const TokenSeqPtr & tokens){
-  std::cout << "parse_expr" << std::endl;
-  tokens->print_current();
+//  std::cout << "parse_expr" << std::endl;
+//  tokens->print_current();
   ExprPtr expr=parse_product(tokens);
   std::vector<TokenType> types = {PLUS,MINUS};
   while( tokens->except_token(types)){
@@ -270,31 +276,29 @@ ExprPtr parse_expr(const TokenSeqPtr & tokens){
 }
 
 ExprPtr parse_product(const TokenSeqPtr & tokens){
-  std::cout << "parse_product" << std::endl;
-  tokens->print_current();
+//  std::cout << "parse_product" << std::endl;
+//  tokens->print_current();
 
   ExprPtr expr=parse_factor(tokens);
   std::vector<TokenType> types = {DIVIDE,MULT};
   TokenType type_i=tokens->peek()->type;
   while( tokens->except_token(types)){
-    TokenType type_i=tokens->peek()->type;
-//    tokens->shift();
     expr=ExprPtr(new Expr(type_i,expr,parse_factor(tokens)));
+    type_i=tokens->peek()->type;
 
   }
   return expr;
 }
 
 ExprPtr parse_factor(const TokenSeqPtr & tokens){
-  std::cout << "parse_factor" << std::endl;
-  tokens->print_current();
+//  std::cout << "parse_factor" << std::endl;
+//  tokens->print_current();
 
   Expr * expr=NULL;
   std::vector<TokenType> types = {NUMBER,VAR,BRACKET};
 
-//  TokenPtr token_i = tokens->peek();
-  tokens->except_token(types);
   TokenPtr token_i = tokens->peek();
+  tokens->except_token(types);
   if(token_i->type==VAR || token_i->type==NUMBER){
     expr=new Expr(token_i);
   }
@@ -308,18 +312,41 @@ void print_envir(Envir & envir){
   std::cout << std::endl;
 }
 
-void eval_statment(StatementPtr statement, Envir & envir){
+void eval_statment(const StatementPtr & statement, Envir & envir){
   if(statement->type==READ){
     int value;
     std::cin >> value;
     envir[statement->var]=value;
   }
   if(statement->type==SET){
-    envir[statement->var]=0.0;
+    ExprPtr expr= *statement->expr;
+    envir[statement->var]=eval_expr(expr,envir);
   }
   if(statement->type==PRINT){
-    std::cout << envir[statement->var] << std::endl;
+    std::cout << "$" << envir[statement->var] << std::endl;
   }
+}
+
+float eval_expr(const ExprPtr & expr, Envir & envir){
+  if(expr->is_leaf){
+    TokenPtr token=std::get<TokenPtr>(expr->data);
+    if(token->type==NUMBER){
+      return std::get<float>(token->data);
+    }
+    if(token->type==VAR){
+      std::string var=std::get<std::string>(token->data);
+      return envir[var];
+    }
+  }else{
+    ptr_pair<Expr> pair=std::get<ptr_pair<Expr>>(expr->data);
+    if(expr->type==MULT){
+      float lvalue= eval_expr(pair.first,envir);
+      float rvalue= eval_expr(pair.second,envir);
+
+      return lvalue*rvalue;
+    }
+  }
+  return 0;
 }
 
 int main(){
