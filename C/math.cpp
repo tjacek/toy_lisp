@@ -251,9 +251,9 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
     tokens->except_token(EQUAL);
     ExprPtr expr=parse_expr(tokens);
     statement=new Statement(token_i->type,var_i,expr);
-    std::cout << "*******************" << std::endl;
-    std::cout << expr->to_str();
-    std::cout << "*******************" << std::endl;
+//    std::cout << "*******************" << std::endl;
+//    std::cout << expr->to_str();
+//    std::cout << "*******************" << std::endl;
   }else{
       std::string var_i=tokens->peek()->to_str();
       statement=new Statement(token_i->type,var_i);
@@ -271,7 +271,7 @@ ExprPtr parse_expr(const TokenSeqPtr & tokens){
     tokens->shift();
     expr=ExprPtr(new Expr(type_i,expr,parse_product(tokens)));
   }
-  tokens->print_current();
+//  tokens->print_current();
   return expr;
 }
 
@@ -285,7 +285,6 @@ ExprPtr parse_product(const TokenSeqPtr & tokens){
   while( tokens->except_token(types)){
     expr=ExprPtr(new Expr(type_i,expr,parse_factor(tokens)));
     type_i=tokens->peek()->type;
-
   }
   return expr;
 }
@@ -339,11 +338,19 @@ float eval_expr(const ExprPtr & expr, Envir & envir){
     }
   }else{
     ptr_pair<Expr> pair=std::get<ptr_pair<Expr>>(expr->data);
+    float lvalue= eval_expr(pair.first,envir);
+    float rvalue= eval_expr(pair.second,envir);
     if(expr->type==MULT){
-      float lvalue= eval_expr(pair.first,envir);
-      float rvalue= eval_expr(pair.second,envir);
-
       return lvalue*rvalue;
+    }
+    if(expr->type==PLUS){
+      return lvalue+rvalue;
+    }
+    if(expr->type==MINUS){
+      return lvalue-rvalue;
+    }
+    if(expr->type==DIVIDE){
+      return lvalue/rvalue;
     }
   }
   return 0;
