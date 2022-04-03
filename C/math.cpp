@@ -60,6 +60,8 @@ constexpr const char* type_to_str(TokenType type_i){
         case TokenType::MINUS: return "-";
         case TokenType::DIVIDE: return "/";
         case TokenType::MULT: return "*";
+        case TokenType::LBRACKET: return "(";
+        case TokenType::RBRACKET: return ")";
         case TokenType::READ: return "read";        
         case TokenType::SET: return "set";
         case TokenType::PRINT: return "print";
@@ -75,7 +77,6 @@ void TokenSeq::print_types(){
 }
 
 bool TokenSeq::next_token_is(std::vector<TokenType> & types){
-
   TokenPtr token=this->peek();
   for(auto it = types.begin(); it != types.end(); ++it) {
     TokenType type_i=(*it);
@@ -94,7 +95,7 @@ bool TokenSeq::except_token(TokenType type){
 bool TokenSeq::except_token(std::vector<TokenType> & types){
   TokenPtr token=this->peek();
 //  this->print_current();
-  if(this->current== this->tokens.size()-1){
+  if(this->current == this->tokens.size()-1 ){
     return false;
   }
   if(!this->next_token_is(types)){
@@ -181,7 +182,12 @@ TokenPtr get_inst(std::string str_i){
       token_i=new Token(MULT);
   } else if(str_i.compare("/")==0){
       token_i=new Token(DIVIDE);
+  } else if(str_i.compare("(")==0){
+      token_i=new Token(LBRACKET);
+  } else if(str_i.compare(")")==0){
+      token_i=new Token(RBRACKET);
   }
+
   return TokenPtr(token_i);
 }
 
@@ -262,45 +268,77 @@ StatementPtr parse_statement(const TokenSeqPtr & tokens){
 }
 
 ExprPtr parse_expr(const TokenSeqPtr & tokens){
-//  std::cout << "parse_expr" << std::endl;
-//  tokens->print_current();
+  std::cout << "parse_expr" << std::endl;
+  tokens->print_current();
   ExprPtr expr=parse_product(tokens);
+//  if(tokens->peek()->type==RBRACKET){
+//    return expr;
+//  }
   std::vector<TokenType> types = {PLUS,MINUS};
-  while( tokens->except_token(types)){
+  TokenType type_i=tokens->peek()->type;
+  while( tokens->next_token_is(types)){
+    tokens->shift();
     TokenType type_i=tokens->peek()->type;
     tokens->shift();
+    if(tokens->peek()->type==RBRACKET){
+      return expr;
+    }
     expr=ExprPtr(new Expr(type_i,expr,parse_product(tokens)));
   }
-//  tokens->print_current();
+  std::cout << "END parse_expr" << std::endl;
+  tokens->print_current();
   return expr;
 }
 
 ExprPtr parse_product(const TokenSeqPtr & tokens){
-//  std::cout << "parse_product" << std::endl;
-//  tokens->print_current();
-
+  std::cout << "parse_product" << std::endl;
+  tokens->print_current();
   ExprPtr expr=parse_factor(tokens);
+//  if(tokens->peek()->type==RBRACKET){
+//    return expr;
+//  }
   std::vector<TokenType> types = {DIVIDE,MULT};
   TokenType type_i=tokens->peek()->type;
-  while( tokens->except_token(types)){
+  while( tokens->next_token_is(types)){
+    tokens->shift();
+    if(tokens->peek()->type==RBRACKET){
+      return expr;
+    }
     expr=ExprPtr(new Expr(type_i,expr,parse_factor(tokens)));
-    type_i=tokens->peek()->type;
   }
+  std::cout << "END parse_product" << std::endl;
+
+  tokens->print_current();
   return expr;
 }
 
 ExprPtr parse_factor(const TokenSeqPtr & tokens){
-//  std::cout << "parse_factor" << std::endl;
-//  tokens->print_current();
+  std::cout << "parse_factor" << std::endl;
+  tokens->print_current();
 
   Expr * expr=NULL;
-  std::vector<TokenType> types = {NUMBER,VAR,BRACKET};
+  std::vector<TokenType> types = {NUMBER,VAR,LBRACKET,RBRACKET};
 
   TokenPtr token_i = tokens->peek();
   tokens->except_token(types);
   if(token_i->type==VAR || token_i->type==NUMBER){
     expr=new Expr(token_i);
+    std::cout << "END parse_factor" << std::endl;
+    tokens->print_current();
+    return ExprPtr(expr);
   }
+  if(token_i->type==LBRACKET){
+//    tokens->shift();
+    tokens->print_current();
+    ExprPtr result=parse_expr(tokens);
+    std::cout << "Type " << tokens->peek()->to_str() << std::endl;
+    tokens->except_token(RBRACKET);
+    std::cout << "END parse_factor" << std::endl;
+    tokens->print_current();
+    return result;
+  }
+  std::cout <<"ERROR" << token_i->to_str() <<std::endl ;
+  tokens->print_current();
   return ExprPtr(expr);
 }
 
