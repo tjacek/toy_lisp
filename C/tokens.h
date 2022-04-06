@@ -21,6 +21,8 @@ class Token{
     std::string data;
     Token(TokenType type,std::string str);
     std::string get_type();
+    bool is_start();
+    bool is_end();
 };
 
 typedef std::shared_ptr<Token> TokenPtr;
@@ -37,6 +39,9 @@ class TokenSeq{
   	void print(int start=0);
   	void print_types();
 };
+
+typedef std::shared_ptr<TokenSeq> TokenSeqPtr;
+
 
 typedef std::shared_ptr<TokenSeq> TokenSeqPtr;
 TokenSeqPtr tokenize(std::string line);

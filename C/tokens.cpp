@@ -46,6 +46,14 @@ std::string Token::get_type(){
   }
 }
 
+bool Token::is_start(){
+  return this->data.compare("(");
+}
+
+bool Token::is_end(){
+  return this->data.compare(")");
+}
+
 TokenPtr TokenSeq::peek(){
   return this->tokens[this->current];;
 }

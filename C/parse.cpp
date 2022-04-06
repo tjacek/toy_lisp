@@ -1,4 +1,5 @@
 #include "tokens.h"
+#include "parse.h"
 
 void interpret(std::string in_path){
   std::ifstream infile(in_path);
@@ -9,8 +10,7 @@ void interpret(std::string in_path){
     line_counter++;
     TokenSeqPtr tokens= tokenize(line);
     tokens->print_types();
-    tokens->peek();
-    tokens->shift();
+
 /*    try{
       StatementPtr stat_i= parse_statement(tokens);
       eval_statment(stat_i,envir);
@@ -22,6 +22,27 @@ void interpret(std::string in_path){
 
     lines.push_back(tokens);
   }
+}
+
+ExprPtr parse_expr(const TokenSeqPtr & tokens){
+  TokenPtr token=tokens->peek();
+  if(token->is_end()){
+    throw "unexpected )";
+  }
+  ExprPtr expr= ExprPtr(new Expr<ComplexExpr>());
+
+  if(token->is_start()){
+    ComplexExprPtr complex_expr(new ComplexExpr());
+    while(!token->is_end()){
+//      expr->subexpr
+      tokens->shift();
+    }
+    expr->data=complex_expr;
+    return expr;
+  }
+  tokens->shift();
+  
+  return expr;
 }
 
 int main(){
