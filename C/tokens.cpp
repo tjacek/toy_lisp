@@ -1,26 +1,5 @@
 #include "tokens.h"
 
-void interpret(std::string in_path){
-  std::ifstream infile(in_path);
-  std::string line;
-  std::vector<TokenSeqPtr> lines;
-  int line_counter=0;
-  while (std::getline(infile, line)){
-    line_counter++;
-    TokenSeqPtr tokens= tokenize(line);
-    tokens->print_types();
-/*    try{
-      StatementPtr stat_i= parse_statement(tokens);
-      eval_statment(stat_i,envir);
-    }catch(std::string e){
-       std::cout << "Line: " << line_counter << std::endl;
-       std::cout << e << std::endl;
-       return ; 
-    }*/
-    lines.push_back(tokens);
-  }
-}
-
 TokenSeqPtr tokenize(std::string line){
   replace_string(line,"(","  ( ");
   replace_string(line,")"," ) ");
@@ -67,6 +46,16 @@ std::string Token::get_type(){
   }
 }
 
+TokenPtr TokenSeq::peek(){
+  return this->tokens[this->current];;
+}
+
+void TokenSeq::shift(){
+  if(this->current < this->tokens.size()-1){
+    this->current++;
+  }
+}
+
 void TokenSeq::add(TokenPtr token){
   this->tokens.push_back(token);
 }
@@ -84,8 +73,4 @@ void TokenSeq::print_types(){
     std::cout <<  (*it)->get_type() <<" ";
   }
   std::cout << std::endl;
-}
-
-int main(){
-  interpret("test.lisp");
 }

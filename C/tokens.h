@@ -31,6 +31,8 @@ class TokenSeq{
     int current=0;
 
   public:
+    TokenPtr peek();
+    void shift();
   	void add(TokenPtr token);
   	void print(int start=0);
   	void print_types();
