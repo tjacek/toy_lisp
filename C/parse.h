@@ -22,6 +22,7 @@ class ComplexExpr:Expr{
 };*/
 
 typedef std::variant<std::string,float> Atom;
+typedef std::shared_ptr<Atom> AtomPtr;
 
 template<class T>
 class Expr{
@@ -38,6 +39,6 @@ typedef std::shared_ptr<Expr<ComplexExpr>> ExprPtr;
 typedef std::shared_ptr<ComplexExpr> ComplexExprPtr;
 
 ExprPtr parse_expr(const TokenSeqPtr & tokens);
-//AtomPtr parse_atom(const TokenPtr & token);
+AtomPtr parse_atom(const Token & token);
 
 #endif

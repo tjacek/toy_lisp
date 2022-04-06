@@ -41,8 +41,19 @@ ExprPtr parse_expr(const TokenSeqPtr & tokens){
     return expr;
   }
   tokens->shift();
-  
+
   return expr;
+}
+
+AtomPtr parse_atom(const TokenPtr & token){
+//  AtomPtr atom=AtomPtr(new Atom());
+  if(token->type==NUMBER){
+    float value=std::atof(token->data.c_str());
+    return AtomPtr(new Atom(value));
+  }else{
+//    *atom=token->data;
+    return AtomPtr(new Atom(token->data));
+  }
 }
 
 int main(){
