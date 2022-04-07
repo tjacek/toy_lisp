@@ -47,11 +47,11 @@ std::string Token::get_type(){
 }
 
 bool Token::is_start(){
-  return this->data.compare("(");
+  return this->data.compare("(")==0;
 }
 
 bool Token::is_end(){
-  return this->data.compare(")");
+  return this->data.compare(")")==0;
 }
 
 TokenPtr TokenSeq::peek(){
@@ -81,4 +81,8 @@ void TokenSeq::print_types(){
     std::cout <<  (*it)->get_type() <<" ";
   }
   std::cout << std::endl;
+}
+
+int TokenSeq::get_current(){
+  return this->current;
 }

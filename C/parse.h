@@ -27,18 +27,22 @@ typedef std::shared_ptr<Atom> AtomPtr;
 template<class T>
 class Expr{
   public:
-    std::variant<std::shared_ptr<Atom>,std::shared_ptr<T>> data;
+    std::variant<AtomPtr,std::shared_ptr<T>> data;
+//    ExprPtr(const std::shared_ptr<T>>  )
 };
 
 class ComplexExpr{
   public:
-  std::vector<Expr<ComplexExpr>> subexprs;
+  std::vector<std::shared_ptr<Expr<ComplexExpr>>> subexprs;
 };
+
+typedef std::shared_ptr<Expr<ComplexExpr>> ExpPtr;
+
 
 typedef std::shared_ptr<Expr<ComplexExpr>> ExprPtr;
 typedef std::shared_ptr<ComplexExpr> ComplexExprPtr;
 
 ExprPtr parse_expr(const TokenSeqPtr & tokens);
-AtomPtr parse_atom(const Token & token);
+AtomPtr parse_atom(const TokenPtr & token);
 
 #endif
