@@ -10,16 +10,19 @@ TokenSeqPtr tokenize(std::string line){
 
   for ( ; iter != end; ++iter){
     std::string str_i=*iter;
-    TokenType type_i;
-    if(std::regex_match (str_i,command_reg)){
-      type_i= SYNTAX;
-    } else if(std::regex_match (str_i,number_reg)){
-      type_i= NUMBER;
-    } else if(std::regex_match (str_i,var_reg)){
-      type_i= VAR;
+    if(str_i.length()>0){
+      TokenType type_i;
+      if(std::regex_match (str_i,command_reg)){
+        type_i= SYNTAX;
+      } else if(std::regex_match (str_i,number_reg)){
+        type_i= NUMBER;
+      } else if(std::regex_match (str_i,var_reg)){
+        type_i= VAR;
+      }
+    
+     TokenPtr token_i= TokenPtr(new Token(type_i,str_i));
+     tokens->add(token_i);
     }
-    TokenPtr token_i= TokenPtr(new Token(type_i,str_i));
-    tokens->add(token_i);
   }
   return tokens;
 }

@@ -9,9 +9,10 @@ void interpret(std::string in_path){
   while (std::getline(infile, line)){
     line_counter++;
     TokenSeqPtr tokens= tokenize(line);    
-    tokens->print_types(); 
+//    tokens->print_types(); 
     try{
-      parse_expr(tokens);
+      ExprPtr expr= parse_expr(tokens);
+      std::cout << expr->is_atom() << std::endl;
     }catch(std::string e){
        std::cout << "Line: " << line_counter << std::endl;
        std::cout << e << std::endl;
@@ -23,12 +24,11 @@ void interpret(std::string in_path){
 }
 
 ExprPtr parse_expr(const TokenSeqPtr & tokens){
-
   TokenPtr token=tokens->peek();
   if(token->is_end()){
-    std::cout << token->data;
     throw std::string("unexpected )");
   }
+  tokens->shift();
   ExprPtr expr= ExprPtr(new Expr<ComplexExpr>());
   if(token->is_start()){
     ComplexExprPtr complex_expr(  new ComplexExpr());
@@ -37,9 +37,9 @@ ExprPtr parse_expr(const TokenSeqPtr & tokens){
       tokens->shift();
     }
     expr->data=complex_expr;
-    return expr;//expr;
+    return expr;
   }
-  tokens->shift();
+//  tokens->shift();
   expr->data=parse_atom(token);
   return expr;
 }
@@ -52,6 +52,39 @@ AtomPtr parse_atom(const TokenPtr & token){
      return AtomPtr(new Atom(token->data));
   }
 }
+
+template<class T>
+std::string Expr<T>::to_str(){
+  if(std::holds_alternative<AtomPtr>(this->data)) {
+    AtomPtr atom = std::get<AtomPtr>(this->data);
+    if(std::holds_alternative<float>(*atom)){
+
+      float value=std::get<float>(*atom);
+      return std::to_string(value);
+    }else{
+      return std::get<std::string>(*atom);
+    }
+  }
+  ComplexExprPtr complex_expr= std::get<ComplexExprPtr>(this->data);
+  return complex_expr->to_str();
+}
+
+template<class T>
+bool Expr<T>::is_atom(){
+  return std::holds_alternative<AtomPtr>(this->data);
+}
+
+std::string ComplexExpr::to_str(){
+  std::string expr_string="[";
+  for (auto it = this->subexprs.begin(); it != this->subexprs.end(); ++it) {
+//    std::string tmp=(*it);
+    expr_string+= (*it)->to_str();
+  }
+  expr_string+="]";
+  return expr_string;
+}
+
+
 
 int main(){
   interpret("test.lisp");

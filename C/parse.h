@@ -28,12 +28,14 @@ template<class T>
 class Expr{
   public:
     std::variant<AtomPtr,std::shared_ptr<T>> data;
-//    ExprPtr(const std::shared_ptr<T>>  )
+    std::string to_str();
+    bool is_atom();
 };
 
 class ComplexExpr{
   public:
   std::vector<std::shared_ptr<Expr<ComplexExpr>>> subexprs;
+  std::string to_str();
 };
 
 typedef std::shared_ptr<Expr<ComplexExpr>> ExpPtr;
