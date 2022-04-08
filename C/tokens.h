@@ -39,6 +39,7 @@ class TokenSeq{
   	void print(int start=0);
   	void print_types();
     int get_current();
+    void print_current();
 };
 
 typedef std::shared_ptr<TokenSeq> TokenSeqPtr;

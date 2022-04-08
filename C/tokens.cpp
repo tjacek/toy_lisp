@@ -18,10 +18,9 @@ TokenSeqPtr tokenize(std::string line){
         type_i= NUMBER;
       } else if(std::regex_match (str_i,var_reg)){
         type_i= VAR;
-      }
-    
-     TokenPtr token_i= TokenPtr(new Token(type_i,str_i));
-     tokens->add(token_i);
+      }    
+      TokenPtr token_i= TokenPtr(new Token(type_i,str_i));
+      tokens->add(token_i);
     }
   }
   return tokens;
@@ -77,6 +76,10 @@ void TokenSeq::print(int i){
     std::cout << token_j->data << " ";
   }
   std::cout << std::endl;
+}
+
+void TokenSeq::print_current(){
+  this->print( this->current);
 }
 
 void TokenSeq::print_types(){

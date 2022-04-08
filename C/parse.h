@@ -29,7 +29,6 @@ class Expr{
   public:
     std::variant<AtomPtr,std::shared_ptr<T>> data;
     std::string to_str();
-    bool is_atom();
 };
 
 class ComplexExpr{

@@ -12,13 +12,12 @@ void interpret(std::string in_path){
 //    tokens->print_types(); 
     try{
       ExprPtr expr= parse_expr(tokens);
-      std::cout << expr->is_atom() << std::endl;
+      std::cout << expr->to_str() << std::endl;
     }catch(std::string e){
        std::cout << "Line: " << line_counter << std::endl;
        std::cout << e << std::endl;
        return ; 
     }
-
     lines.push_back(tokens);
   }
 }
@@ -34,12 +33,12 @@ ExprPtr parse_expr(const TokenSeqPtr & tokens){
     ComplexExprPtr complex_expr(  new ComplexExpr());
     while(!token->is_end()){
       complex_expr->subexprs.push_back(parse_expr(tokens));
-      tokens->shift();
+      token=tokens->peek();
     }
+    tokens->shift();
     expr->data=complex_expr;
     return expr;
   }
-//  tokens->shift();
   expr->data=parse_atom(token);
   return expr;
 }
@@ -69,22 +68,15 @@ std::string Expr<T>::to_str(){
   return complex_expr->to_str();
 }
 
-template<class T>
-bool Expr<T>::is_atom(){
-  return std::holds_alternative<AtomPtr>(this->data);
-}
-
 std::string ComplexExpr::to_str(){
   std::string expr_string="[";
   for (auto it = this->subexprs.begin(); it != this->subexprs.end(); ++it) {
-//    std::string tmp=(*it);
     expr_string+= (*it)->to_str();
+    expr_string+=" ";
   }
   expr_string+="]";
   return expr_string;
 }
-
-
 
 int main(){
   interpret("test.lisp");
