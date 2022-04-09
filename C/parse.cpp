@@ -1,27 +1,6 @@
 #include "tokens.h"
 #include "parse.h"
 
-void interpret(std::string in_path){
-  std::ifstream infile(in_path);
-  std::string line;
-  std::vector<TokenSeqPtr> lines;
-  int line_counter=0;
-  while (std::getline(infile, line)){
-    line_counter++;
-    TokenSeqPtr tokens= tokenize(line);    
-//    tokens->print_types(); 
-    try{
-      ExprPtr expr= parse_expr(tokens);
-      std::cout << expr->to_str() << std::endl;
-    }catch(std::string e){
-       std::cout << "Line: " << line_counter << std::endl;
-       std::cout << e << std::endl;
-       return ; 
-    }
-    lines.push_back(tokens);
-  }
-}
-
 ExprPtr parse_expr(const TokenSeqPtr & tokens){
   TokenPtr token=tokens->peek();
   if(token->is_end()){
@@ -53,19 +32,45 @@ AtomPtr parse_atom(const TokenPtr & token){
 }
 
 template<class T>
-std::string Expr<T>::to_str(){
-  if(std::holds_alternative<AtomPtr>(this->data)) {
-    AtomPtr atom = std::get<AtomPtr>(this->data);
-    if(std::holds_alternative<float>(*atom)){
+bool Expr<T>::is_atom(){
+  return std::holds_alternative<AtomPtr>(this->data);
+}
 
+template<class T>
+AtomPtr Expr<T>::get_atom(){
+  return std::get<AtomPtr>(this->data);
+}
+
+template<class T>
+std::shared_ptr<T> Expr<T>::get_complex_expr(){
+  return std::get<ComplexExprPtr>(this->data);
+}
+
+template<class T>
+std::string Expr<T>::to_str(){
+  if(this->is_atom()){
+    AtomPtr atom =this->get_atom();
+    if(std::holds_alternative<float>(*atom)){
       float value=std::get<float>(*atom);
       return std::to_string(value);
     }else{
       return std::get<std::string>(*atom);
     }
   }
-  ComplexExprPtr complex_expr= std::get<ComplexExprPtr>(this->data);
+  ComplexExprPtr complex_expr=this->get_complex_expr(); 
   return complex_expr->to_str();
+}
+
+bool ComplexExpr::check_type(std::string type){
+  ExprPtr expr=this->subexprs[0];
+  if(not expr->is_atom()){
+    return false;
+  }
+  AtomPtr atom=expr->get_atom();
+  if(std::holds_alternative<std::string>(*atom)){
+    return std::get<std::string>(*atom).compare(type);
+  }
+  return false;
 }
 
 std::string ComplexExpr::to_str(){
@@ -76,8 +81,4 @@ std::string ComplexExpr::to_str(){
   }
   expr_string+="]";
   return expr_string;
-}
-
-int main(){
-  interpret("test.lisp");
 }
