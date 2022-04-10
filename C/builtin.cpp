@@ -7,11 +7,30 @@ VariablePtr ArithmeticFunction::call(std::vector<VariablePtr> & args,Envir & env
   return VariablePtr(new Variable(result));
 }
 
-float ArithmeticFunction::raw_fun(float x,float y){
-  return x+y;
-}
+
+class Add:public ArithmeticFunction{
+  float raw_fun(float x,float y) { return x+y;};
+};
+
+class Mult:public ArithmeticFunction{
+  float raw_fun(float x,float y) { return x*y;};
+};
+
+class Sub:public ArithmeticFunction{
+  float raw_fun(float x,float y) { return x-y;};
+};
+
+class Div:public ArithmeticFunction{
+  float raw_fun(float x,float y) { return x/y;};
+};
 
 void init_envir(Envir & envir){
-  FunctionPtr fun =FunctionPtr(new ArithmeticFunction());
-  envir["+"]=VariablePtr(new Variable(fun));
+  FunctionPtr fun_add =FunctionPtr(new Add());
+  envir["+"]=VariablePtr(new Variable(fun_add));
+  FunctionPtr fun_mult =FunctionPtr(new Mult());
+  envir["*"]=VariablePtr(new Variable(fun_mult));
+  FunctionPtr fun_sub =FunctionPtr(new Sub());
+  envir["-"]=VariablePtr(new Variable(fun_sub));
+  FunctionPtr fun_div =FunctionPtr(new Div());
+  envir["/"]=VariablePtr(new Variable(fun_div));
 }
