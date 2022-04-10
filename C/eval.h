@@ -12,7 +12,8 @@ typedef std::map<std::string,VariablePtr> Envir;
 
 class Function{
   public:
-  	virtual VariablePtr call(std::vector<VariablePtr> & args,Envir & envir)=0;
+  	virtual VariablePtr operator()(std::vector<VariablePtr> & args,Envir & envir)=0;
+  	virtual std::string to_str()=0;
 };
 typedef std::shared_ptr<Function> FunctionPtr;
 

@@ -59,7 +59,7 @@ VariablePtr call_eval(ComplexExprPtr expr,Envir & envir){
     args.push_back(var_i);
   }
   std::cout << args.size() << std::endl;
-  return fun->call(args,envir);
+  return (*fun)(args,envir);
 }
 
 VariablePtr atom_to_var(AtomPtr atom){
@@ -77,7 +77,7 @@ std::string to_str(VariablePtr variable){
   }else if(std::holds_alternative<float>(*variable)){
      return std::to_string(std::get<float>(*variable));
   }
-  return "lambda";
+  return std::get<FunctionPtr>(*variable)->to_str();
 }
 
 void print_envir(Envir & envir){
