@@ -61,14 +61,14 @@ std::string Expr<T>::to_str(){
   return complex_expr->to_str();
 }
 
-bool ComplexExpr::check_type(std::string type){
-  ExprPtr expr=this->subexprs[0];
+bool ComplexExpr::check_type(std::string type,int i){
+  ExprPtr expr=this->subexprs[i];
   if(not expr->is_atom()){
     return false;
   }
   AtomPtr atom=expr->get_atom();
   if(std::holds_alternative<std::string>(*atom)){
-    return std::get<std::string>(*atom).compare(type);
+    return std::get<std::string>(*atom).compare(type)==0;
   }
   return false;
 }

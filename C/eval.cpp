@@ -1,4 +1,5 @@
 #include "eval.h"
+#include "builtin.h"
 
 void interpret(std::string in_path){
   std::ifstream infile(in_path);
@@ -6,6 +7,7 @@ void interpret(std::string in_path){
   std::vector<TokenSeqPtr> lines;
   int line_counter=0;
   Envir envir;
+  init_envir(envir);
   while (std::getline(infile, line)){
     line_counter++;
     TokenSeqPtr tokens= tokenize(line);    
@@ -14,6 +16,7 @@ void interpret(std::string in_path){
       ExprPtr expr= parse_expr(tokens);
       VariablePtr var= eval(expr,envir);
       std::cout << expr->to_str() << std::endl;
+      print_envir(envir);
     }catch(std::string e){
        std::cout << "Line: " << line_counter << std::endl;
        std::cout << e << std::endl;
@@ -26,11 +29,62 @@ void interpret(std::string in_path){
 VariablePtr eval(ExpPtr expr,Envir & envir){
   if(expr->is_atom()){
     AtomPtr atom=expr->get_atom();
-    return atom;
+    if(std::holds_alternative<std::string>(*atom)){
+      std::string var_name=std::get<std::string>(*atom);
+      return envir[var_name];
+    }
+    return atom_to_var(atom);
   }
   ComplexExprPtr complex_expr=expr->get_complex_expr();
-  complex_expr->check_type("define");
-  return VariablePtr(new Variable(0.0));
+  if(complex_expr->check_type("define")){
+    return eval_define(complex_expr,envir);
+  }
+  return call_eval(complex_expr,envir);
+}
+
+VariablePtr eval_define(ComplexExprPtr expr,Envir & envir){
+  AtomPtr atom=expr->subexprs[1]->get_atom();
+  std::string var_name =std::get<std::string>(*atom);
+  VariablePtr var=eval(expr->subexprs[2],envir);
+  envir[var_name]= var;
+  return var;
+}
+
+VariablePtr call_eval(ComplexExprPtr expr,Envir & envir){
+  VariablePtr fun_var=eval(expr->subexprs[0],envir);
+  FunctionPtr fun=std::get<FunctionPtr>(*fun_var);
+  std::vector<VariablePtr> args;
+  for (auto it = expr->subexprs.begin()+1; it != expr->subexprs.end(); ++it) {
+    VariablePtr var_i= eval( (*it),envir);
+    args.push_back(var_i);
+  }
+  std::cout << args.size() << std::endl;
+  return fun->call(args,envir);
+}
+
+VariablePtr atom_to_var(AtomPtr atom){
+  if(std::holds_alternative<std::string>(*atom)){
+    std::string str= std::get<std::string>(*atom);
+    return VariablePtr(new Variable(str));
+  }
+  float value=std::get<float>(*atom);
+  return VariablePtr(new Variable(value));
+}
+
+std::string to_str(VariablePtr variable){
+  if(std::holds_alternative<std::string>(*variable)){
+    return std::get<std::string>(*variable);
+  }else if(std::holds_alternative<float>(*variable)){
+     return std::to_string(std::get<float>(*variable));
+  }
+  return "lambda";
+}
+
+void print_envir(Envir & envir){
+  for(const auto& [key, value] : envir) {
+    std::cout << '[' << key << "] = " << to_str(value) << ";";
+  }
+  std::cout << std::endl;  
 }
 
 int main(){

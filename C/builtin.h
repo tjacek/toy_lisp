@@ -1,35 +1,19 @@
-#include "lisp.h"
+#include "eval.h"
 
 typedef float (*Raw_fun)(float, float) ;
 
-class NumericOperation:public Object{
-   public:
-   	std::string str;
-       Raw_fun raw_fun;
-       float (*fun)(float, float);
-   	 
-       NumericOperation(std::string name,Raw_fun raw_fun) 
-       : Object(name){
-         this->raw_fun=raw_fun;
-   	 }
-
-       Object * call(Object * args,Envir envir){
-         float value=0; 
-         Object * left= (*args->objects.begin());
-         Object * right= (*args->objects.end());
-         if(left->type==ObjectType::number_type &&
-            right->type==ObjectType::number_type ){
-            value=this->raw_fun(left->number,right->number);  
-         }
-         Object * result=new Object(value);
-         return result;
-       }
+class ArithmeticFunction:public Function{
+  public:
+    VariablePtr call(std::vector<VariablePtr> & args,Envir & envir);
+    float raw_fun(float,float);
 };
 
-float raw_mult(float x,float y){
-   return x*y;
-}
+void init_envir(Envir & envir);
 
-float raw_add(float x,float y){
-   return x+y;
-}
+/*float raw_mult(float x,float y){ return x*y;}
+
+float raw_add(float x,float y){return x+y;}
+
+float raw_div(float x,float y){return x/y;}
+
+float raw_sub(float x,float y) { return x-y;}*/

@@ -1,67 +1,17 @@
 #include "builtin.h"
 
-Object * ArithmeticOperation::call(std::list<Object*> args,Envir envir){
-  float value=0; 
-  Object * left= (*args.begin());
-  Object * right= (*args.end());
-  if(left->type==ObjectType::number_type &&
-    right->type==ObjectType::number_type ){
-    NumberObject * l= (NumberObject*)left;
-    NumberObject * r= (NumberObject*)right; 
-    value=this->fun(l->value,r->value);  
-  }
-  Object * result=new NumberObject(value);
-  return result;
+VariablePtr ArithmeticFunction::call(std::vector<VariablePtr> & args,Envir & envir){
+  float first=std::get<float>(*args[0]);
+  float second=std::get<float>(*args[1]);
+  float result=this->raw_fun(first,second);
+  return VariablePtr(new Variable(result));
 }
 
-Object * Define::call(std::list<Object*> args,Envir envir){
-  Object * left= (*args.begin());
-  Object * right= (*args.end());
-  if(left->type==ObjectType::string_type){
-    StringObject * name=(StringObject*) left;
-    envir[name->value]=right;
-  }
-    return right;
-  }
-
-Object * ArithmeticOperation::eval(Envir envir){
-  return this;
-}
-
-
-Object * Define::eval(Envir envir){
-  return this;
-}
-
-
-Object * Add::eval(Envir envir){
-  return this;
-}
-
-Object * Mult::eval(Envir envir){
-  return this;
-}
-
-
-std::string Define::to_str(){
-    return "define";
-} 
-
-float Add::fun(float x,float y){
+float ArithmeticFunction::raw_fun(float x,float y){
   return x+y;
 }
 
-std::string Add::to_str(){
-  return "+";
-} 
- 
-float Mult::fun(float x,float y){
-  return x*y;
+void init_envir(Envir & envir){
+  FunctionPtr fun =FunctionPtr(new ArithmeticFunction());
+  envir["+"]=VariablePtr(new Variable(fun));
 }
-
-std::string Mult::to_str(){
-    return "*";
-}
-
-   
-

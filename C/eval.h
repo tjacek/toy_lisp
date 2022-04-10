@@ -3,10 +3,22 @@
 #ifndef EVAL
 #define EVAL
 
-typedef std::variant<float,std::string> Variable;
+class Function;
+
+typedef std::variant<float,std::string,std::shared_ptr<Function>> Variable;
 typedef std::shared_ptr<Variable> VariablePtr;
-
+VariablePtr atom_to_var(AtomPtr atom);
 typedef std::map<std::string,VariablePtr> Envir;
-VariablePtr eval(ExpPtr expr,Envir & envir);
 
+class Function{
+  public:
+  	virtual VariablePtr call(std::vector<VariablePtr> & args,Envir & envir)=0;
+};
+typedef std::shared_ptr<Function> FunctionPtr;
+
+VariablePtr eval(ExpPtr expr,Envir & envir);
+VariablePtr eval_define(ComplexExprPtr expr,Envir & envir);
+VariablePtr call_eval(ComplexExprPtr expr,Envir & envir);
+std::string to_str(VariablePtr variable);
+void print_envir(Envir & envir);
 #endif
