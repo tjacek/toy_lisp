@@ -16,7 +16,7 @@ void interpret(std::string in_path){
       ExprPtr expr= parse_expr(tokens);
       VariablePtr var= eval(expr,envir);
       std::cout << expr->to_str() << std::endl;
-      print_envir(envir);
+      envir.print_envir();
     }catch(std::string e){
        std::cout << "Line: " << line_counter << std::endl;
        std::cout << e << std::endl;
@@ -80,8 +80,20 @@ std::string to_str(VariablePtr variable){
   return std::get<FunctionPtr>(*variable)->to_str();
 }
 
-void print_envir(Envir & envir){
-  for(const auto& [key, value] : envir) {
+Envir::Envir(std::shared_ptr<Envir> outer){
+  this->outer=outer;
+}
+
+VariablePtr & Envir::operator[](const std::string & name){
+  return this->current[name];
+}
+
+//void Envir::set(const std::string &name,VariablePtr value){
+//  this->current[name]=value;
+//}
+
+void Envir::print_envir(){
+  for(const auto& [key, value] : this->current) {
     std::cout << '[' << key << "] = " << to_str(value) << ";";
   }
   std::cout << std::endl;  
