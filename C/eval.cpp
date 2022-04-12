@@ -16,6 +16,7 @@ void interpret(std::string in_path){
       ExprPtr expr= parse_expr(tokens);
       VariablePtr var= eval(expr,envir);
       std::cout << expr->to_str() << std::endl;
+      std::cout << to_str(var) << std::endl;      
       envir->print_envir();
     }catch(std::string e){
        std::cout << "Line: " << line_counter << std::endl;
@@ -39,6 +40,9 @@ VariablePtr eval(ExpPtr expr,EnvirPtr envir){
   if(complex_expr->check_type("define")){
     return eval_define(complex_expr,envir);
   }
+  if(complex_expr->check_type("lambda")){
+    return eval_lambda(complex_expr,envir);
+  }
   return call_eval(complex_expr,envir);
 }
 
@@ -50,6 +54,19 @@ VariablePtr eval_define(ComplexExprPtr expr,EnvirPtr envir){
   return var;
 }
 
+VariablePtr eval_lambda(ComplexExprPtr expr,EnvirPtr envir){
+  ExprPtr body=expr->subexprs[2];
+  ComplexExprPtr args_expr=expr->subexprs[1]->get_complex_expr();
+  std::vector<std::string> args;
+  for(auto it=args_expr->subexprs.begin(); it != args_expr->subexprs.end(); ++it) {
+//    ExprPtr expr=(*it);
+    std::string name_i= (*it)->to_str();
+    args.push_back(name_i);
+  }
+  FunctionPtr lambda=FunctionPtr(new Lambda(args,body,envir));
+  return VariablePtr(new Variable(lambda));
+}
+
 VariablePtr call_eval(ComplexExprPtr expr,EnvirPtr envir){
   VariablePtr fun_var=eval(expr->subexprs[0],envir);
   FunctionPtr fun=std::get<FunctionPtr>(*fun_var);
@@ -58,7 +75,6 @@ VariablePtr call_eval(ComplexExprPtr expr,EnvirPtr envir){
     VariablePtr var_i= eval( (*it),envir);
     args.push_back(var_i);
   }
-  std::cout << args.size() << std::endl;
   return (*fun)(args,envir);
 }
 
@@ -91,7 +107,7 @@ VariablePtr  Envir::get(const std::string & name){
   if(this->outer!= nullptr){
     return this->outer->get(name);
   }
-  return nullptr;//this->current[name];
+  return nullptr;
 }
 
 void Envir::set(const std::string &name,VariablePtr value){
@@ -105,9 +121,29 @@ void Envir::print_envir(){
   std::cout << std::endl;  
 }
 
-//VariablePtr Lambda::operator()(std::vector<VariablePtr> & args,Envir & envir){
-  
-//}
+Lambda::Lambda(std::vector<std::string> args,ExprPtr body,EnvirPtr envir){
+  this->args=args;
+  this->body=body;
+  this->envir=envir;
+}
+
+VariablePtr Lambda::operator()(std::vector<VariablePtr> & args,EnvirPtr envir){
+  EnvirPtr fun_envir=EnvirPtr(new Envir(this->envir));
+  for(int i=0;i<args.size();i++){//auto it = args.begin(); it != args.end(); ++it) {
+    VariablePtr var_i= args[i];//eval( (*it),envir);
+    std::string name_i = this->args[i];
+    fun_envir->set(name_i,var_i);
+  }
+  return eval(this->body,fun_envir);
+}
+
+std::string Lambda::to_str(){
+  std::string str= "Lambda";
+  for (auto it = this->args.begin(); it != this->args.end(); ++it) {
+     str+=" "+ (*it);
+  }
+  return str;
+}
 
 int main(){
   interpret("test.lisp");

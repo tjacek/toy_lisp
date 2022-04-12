@@ -29,15 +29,21 @@ class Function{
 };
 typedef std::shared_ptr<Function> FunctionPtr;
 
-/*class Lambda: public Function{
+class Lambda: public Function{
   public:
   	std::vector<std::string> args;
-  	ComplexExprPtr body;
+  	ExprPtr body;
     EnvirPtr envir;
-};*/
+//    Lambda(ExprPtr body,EnvirPtr envir);
+    Lambda(std::vector<std::string> args,ExprPtr body,EnvirPtr envir);
+    VariablePtr operator()(std::vector<VariablePtr> & args,EnvirPtr envir);
+    std::string to_str();
+};
 
 VariablePtr eval(ExpPtr expr,EnvirPtr envir);
 VariablePtr eval_define(ComplexExprPtr expr,EnvirPtr envir);
+VariablePtr eval_lambda(ComplexExprPtr expr,EnvirPtr envir);
+VariablePtr eval_lambda(ComplexExprPtr expr,EnvirPtr envir);
 VariablePtr call_eval(ComplexExprPtr expr,EnvirPtr envir);
 std::string to_str(VariablePtr variable);
 #endif
