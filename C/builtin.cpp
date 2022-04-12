@@ -1,6 +1,6 @@
 #include "builtin.h"
 
-VariablePtr ArithmeticFunction::operator()(std::vector<VariablePtr> & args,Envir & envir){
+VariablePtr ArithmeticFunction::operator()(std::vector<VariablePtr> & args,EnvirPtr envir){
   float first=std::get<float>(*args[0]);
   float second=std::get<float>(*args[1]);
   float result=this->call(first,second);
@@ -28,13 +28,13 @@ class Div:public ArithmeticFunction{
   std::string to_str(){ return "/";};
 };
 
-void init_envir(Envir & envir){
+void init_envir(EnvirPtr envir){
   FunctionPtr fun_add =FunctionPtr(new Add());
-  envir.set("+",VariablePtr(new Variable(fun_add)));
+  envir->set("+",VariablePtr(new Variable(fun_add)));
   FunctionPtr fun_mult =FunctionPtr(new Mult());
-  envir.set("*",VariablePtr(new Variable(fun_mult)));
+  envir->set("*",VariablePtr(new Variable(fun_mult)));
   FunctionPtr fun_sub =FunctionPtr(new Sub());
-  envir.set("-",VariablePtr(new Variable(fun_sub)));
+  envir->set("-",VariablePtr(new Variable(fun_sub)));
   FunctionPtr fun_div =FunctionPtr(new Div());
-  envir.set("/",VariablePtr(new Variable(fun_div)));
+  envir->set("/",VariablePtr(new Variable(fun_div)));
 }

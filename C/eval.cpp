@@ -6,7 +6,7 @@ void interpret(std::string in_path){
   std::string line;
   std::vector<TokenSeqPtr> lines;
   int line_counter=0;
-  Envir envir;
+  EnvirPtr envir(new Envir());
   init_envir(envir);
   while (std::getline(infile, line)){
     line_counter++;
@@ -16,7 +16,7 @@ void interpret(std::string in_path){
       ExprPtr expr= parse_expr(tokens);
       VariablePtr var= eval(expr,envir);
       std::cout << expr->to_str() << std::endl;
-      envir.print_envir();
+      envir->print_envir();
     }catch(std::string e){
        std::cout << "Line: " << line_counter << std::endl;
        std::cout << e << std::endl;
@@ -26,12 +26,12 @@ void interpret(std::string in_path){
   }
 }
 
-VariablePtr eval(ExpPtr expr,Envir & envir){
+VariablePtr eval(ExpPtr expr,EnvirPtr envir){
   if(expr->is_atom()){
     AtomPtr atom=expr->get_atom();
     if(std::holds_alternative<std::string>(*atom)){
       std::string var_name=std::get<std::string>(*atom);
-      return envir.get(var_name);
+      return envir->get(var_name);
     }
     return atom_to_var(atom);
   }
@@ -42,15 +42,15 @@ VariablePtr eval(ExpPtr expr,Envir & envir){
   return call_eval(complex_expr,envir);
 }
 
-VariablePtr eval_define(ComplexExprPtr expr,Envir & envir){
+VariablePtr eval_define(ComplexExprPtr expr,EnvirPtr envir){
   AtomPtr atom=expr->subexprs[1]->get_atom();
   std::string var_name =std::get<std::string>(*atom);
   VariablePtr var=eval(expr->subexprs[2],envir);
-  envir.set(var_name, var);
+  envir->set(var_name, var);
   return var;
 }
 
-VariablePtr call_eval(ComplexExprPtr expr,Envir & envir){
+VariablePtr call_eval(ComplexExprPtr expr,EnvirPtr envir){
   VariablePtr fun_var=eval(expr->subexprs[0],envir);
   FunctionPtr fun=std::get<FunctionPtr>(*fun_var);
   std::vector<VariablePtr> args;
@@ -88,7 +88,10 @@ VariablePtr  Envir::get(const std::string & name){
   if(this->current.contains(name) ){
     return this->current[name];
   }
-  return this->current[name];
+  if(this->outer!= nullptr){
+    return this->outer->get(name);
+  }
+  return nullptr;//this->current[name];
 }
 
 void Envir::set(const std::string &name,VariablePtr value){
@@ -102,6 +105,9 @@ void Envir::print_envir(){
   std::cout << std::endl;  
 }
 
+//VariablePtr Lambda::operator()(std::vector<VariablePtr> & args,Envir & envir){
+  
+//}
 
 int main(){
   interpret("test.lisp");

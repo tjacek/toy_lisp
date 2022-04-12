@@ -20,17 +20,24 @@ class Envir{
     Envir(std::shared_ptr<Envir> outer=nullptr);
 };
 
+typedef std::shared_ptr<Envir> EnvirPtr;
+
 class Function{
   public:
-  	virtual VariablePtr operator()(std::vector<VariablePtr> & args,Envir & envir)=0;
+  	virtual VariablePtr operator()(std::vector<VariablePtr> & args,EnvirPtr envir)=0;
   	virtual std::string to_str()=0;
 };
 typedef std::shared_ptr<Function> FunctionPtr;
 
-//typedef std::map<std::string,VariablePtr> Envir;
+/*class Lambda: public Function{
+  public:
+  	std::vector<std::string> args;
+  	ComplexExprPtr body;
+    EnvirPtr envir;
+};*/
 
-VariablePtr eval(ExpPtr expr,Envir & envir);
-VariablePtr eval_define(ComplexExprPtr expr,Envir & envir);
-VariablePtr call_eval(ComplexExprPtr expr,Envir & envir);
+VariablePtr eval(ExpPtr expr,EnvirPtr envir);
+VariablePtr eval_define(ComplexExprPtr expr,EnvirPtr envir);
+VariablePtr call_eval(ComplexExprPtr expr,EnvirPtr envir);
 std::string to_str(VariablePtr variable);
 #endif
