@@ -1,36 +1,40 @@
 #include "builtin.h"
 
-VariablePtr ArithmeticFunction::call(std::vector<VariablePtr> & args,Envir & envir){
+VariablePtr ArithmeticFunction::operator()(std::vector<VariablePtr> & args,Envir & envir){
   float first=std::get<float>(*args[0]);
   float second=std::get<float>(*args[1]);
-  float result=this->raw_fun(first,second);
+  float result=this->call(first,second);
   return VariablePtr(new Variable(result));
 }
 
-
 class Add:public ArithmeticFunction{
-  float raw_fun(float x,float y) { return x+y;};
+  float call(float x,float y) { return x+y;};
+  std::string to_str(){ return "+";};
 };
 
 class Mult:public ArithmeticFunction{
-  float raw_fun(float x,float y) { return x*y;};
+  float call(float x,float y) { return x*y;};
+  std::string to_str(){ return "*";};
+
 };
 
 class Sub:public ArithmeticFunction{
-  float raw_fun(float x,float y) { return x-y;};
+  float call(float x,float y) { return x-y;};
+    std::string to_str(){ return "-";};
 };
 
 class Div:public ArithmeticFunction{
-  float raw_fun(float x,float y) { return x/y;};
+  float call(float x,float y) { return x/y;};
+  std::string to_str(){ return "/";};
 };
 
 void init_envir(Envir & envir){
   FunctionPtr fun_add =FunctionPtr(new Add());
-  envir["+"]=VariablePtr(new Variable(fun_add));
+  envir.set("+",VariablePtr(new Variable(fun_add)));
   FunctionPtr fun_mult =FunctionPtr(new Mult());
-  envir["*"]=VariablePtr(new Variable(fun_mult));
+  envir.set("*",VariablePtr(new Variable(fun_mult)));
   FunctionPtr fun_sub =FunctionPtr(new Sub());
-  envir["-"]=VariablePtr(new Variable(fun_sub));
+  envir.set("-",VariablePtr(new Variable(fun_sub)));
   FunctionPtr fun_div =FunctionPtr(new Div());
-  envir["/"]=VariablePtr(new Variable(fun_div));
+  envir.set("/",VariablePtr(new Variable(fun_div)));
 }

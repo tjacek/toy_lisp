@@ -14,8 +14,8 @@ class Envir{
     std::map<std::string,VariablePtr> current;
     std::shared_ptr<Envir> outer;
 
-    VariablePtr & operator[](const std::string &var);
-//    void set(const std::string &set,VariablePtr value);
+    VariablePtr get(const std::string &var);
+    void set(const std::string & name,VariablePtr value);
     void print_envir();
     Envir(std::shared_ptr<Envir> outer=nullptr);
 };
