@@ -28,13 +28,15 @@ class Div:public ArithmeticFunction{
   std::string to_str(){ return "/";};
 };
 
+class Eq:public ArithmeticFunction{
+  float call(float x,float y) { return (float)(x==y);};
+  std::string to_str(){ return "=";};
+};
+
 void init_envir(EnvirPtr envir){
-  FunctionPtr fun_add =FunctionPtr(new Add());
-  envir->set("+",VariablePtr(new Variable(fun_add)));
-  FunctionPtr fun_mult =FunctionPtr(new Mult());
-  envir->set("*",VariablePtr(new Variable(fun_mult)));
-  FunctionPtr fun_sub =FunctionPtr(new Sub());
-  envir->set("-",VariablePtr(new Variable(fun_sub)));
-  FunctionPtr fun_div =FunctionPtr(new Div());
-  envir->set("/",VariablePtr(new Variable(fun_div)));
+  envir->set("+",FunctionPtr(new Add()));
+  envir->set("*",FunctionPtr(new Mult()));
+  envir->set("-",FunctionPtr(new Sub()));
+  envir->set("/",FunctionPtr(new Div()));
+  envir->set("=",FunctionPtr(new Eq()));
 }

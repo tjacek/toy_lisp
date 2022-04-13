@@ -43,6 +43,9 @@ VariablePtr eval(ExpPtr expr,EnvirPtr envir){
   if(complex_expr->check_type("lambda")){
     return eval_lambda(complex_expr,envir);
   }
+  if(complex_expr->check_type("if")){
+    return eval_cond(complex_expr,envir);
+  }
   return call_eval(complex_expr,envir);
 }
 
@@ -59,12 +62,19 @@ VariablePtr eval_lambda(ComplexExprPtr expr,EnvirPtr envir){
   ComplexExprPtr args_expr=expr->subexprs[1]->get_complex_expr();
   std::vector<std::string> args;
   for(auto it=args_expr->subexprs.begin(); it != args_expr->subexprs.end(); ++it) {
-//    ExprPtr expr=(*it);
     std::string name_i= (*it)->to_str();
     args.push_back(name_i);
   }
   FunctionPtr lambda=FunctionPtr(new Lambda(args,body,envir));
   return VariablePtr(new Variable(lambda));
+}
+
+VariablePtr eval_cond(ComplexExprPtr expr,EnvirPtr envir){
+  VariablePtr cond=eval(expr->subexprs[1],envir);
+  if(std::get<float>(*cond)==0){
+    return eval(expr->subexprs[3],envir);
+  }
+  return eval(expr->subexprs[2],envir);
 }
 
 VariablePtr call_eval(ComplexExprPtr expr,EnvirPtr envir){
@@ -112,6 +122,10 @@ VariablePtr  Envir::get(const std::string & name){
 
 void Envir::set(const std::string &name,VariablePtr value){
   this->current[name]=value;
+}
+
+void Envir::set(const std::string & name,FunctionPtr value){
+  this->current[name]= VariablePtr(new Variable(value));
 }
 
 void Envir::print_envir(){
