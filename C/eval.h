@@ -47,4 +47,6 @@ VariablePtr eval_lambda(ComplexExprPtr expr,EnvirPtr envir);
 VariablePtr eval_cond(ComplexExprPtr expr,EnvirPtr envir);
 VariablePtr call_eval(ComplexExprPtr expr,EnvirPtr envir);
 std::string to_str(VariablePtr variable);
+
+void interpret_line(std::string & line,EnvirPtr envir,int line_counter);
 #endif

@@ -1,17 +1,38 @@
 #include "eval.h"
 #include "builtin.h"
 
-void interpret(std::string in_path){
+void interpreter(){
+  bool cond=true;
+  EnvirPtr envir(new Envir());
+  int line_counter=0;
+  while(cond){
+    std::string line;
+//    std::cin >> line;
+    std::getline(std::cin, line);
+    if(line.compare("quit")==0){
+      cond=false;
+    }
+    interpret_line(line,envir,line_counter);
+    line_counter++;
+  }
+}
+
+void from_file(std::string in_path){
   std::ifstream infile(in_path);
   std::string line;
-  std::vector<TokenSeqPtr> lines;
   int line_counter=0;
   EnvirPtr envir(new Envir());
   init_envir(envir);
   while (std::getline(infile, line)){
     line_counter++;
-    TokenSeqPtr tokens= tokenize(line);    
-//    tokens->print_types(); 
+    interpret_line(line,envir,line_counter);
+  }
+}
+
+void interpret_line(std::string & line,EnvirPtr envir,int line_counter){
+  std::cout << line << std::endl;
+//  return ;
+  TokenSeqPtr tokens= tokenize(line);     
     try{
       ExprPtr expr= parse_expr(tokens);
       VariablePtr var= eval(expr,envir);
@@ -21,10 +42,7 @@ void interpret(std::string in_path){
     }catch(std::string e){
        std::cout << "Line: " << line_counter << std::endl;
        std::cout << e << std::endl;
-       return ; 
     }
-    lines.push_back(tokens);
-  }
 }
 
 VariablePtr eval(ExpPtr expr,EnvirPtr envir){
@@ -159,6 +177,11 @@ std::string Lambda::to_str(){
   return str;
 }
 
-int main(){
-  interpret("test.lisp");
+int main(int argc, char *argv[]){
+//  from_file("test.lisp");
+  if(argc >1){
+    from_file(std::string(argv[1]));
+  }else{
+    interpreter();
+  }
 }
