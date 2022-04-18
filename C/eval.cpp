@@ -2,18 +2,21 @@
 #include "builtin.h"
 
 void interpreter(){
-  bool cond=true;
   EnvirPtr envir(new Envir());
+  init_envir(envir);
   int line_counter=0;
-  while(cond){
+  while(true){
     std::string line;
-//    std::cin >> line;
     std::getline(std::cin, line);
     if(line.compare("quit")==0){
-      cond=false;
+      return;
     }
-    interpret_line(line,envir,line_counter);
-    line_counter++;
+    if(line.compare("show")==0){
+      envir->print_envir();
+    }else{
+      interpret_line(line,envir,line_counter);
+      line_counter++;
+    }
   }
 }
 
@@ -26,19 +29,17 @@ void from_file(std::string in_path){
   while (std::getline(infile, line)){
     line_counter++;
     interpret_line(line,envir,line_counter);
+    envir->print_envir();
   }
 }
 
 void interpret_line(std::string & line,EnvirPtr envir,int line_counter){
-  std::cout << line << std::endl;
-//  return ;
   TokenSeqPtr tokens= tokenize(line);     
     try{
       ExprPtr expr= parse_expr(tokens);
       VariablePtr var= eval(expr,envir);
       std::cout << expr->to_str() << std::endl;
       std::cout << to_str(var) << std::endl;      
-      envir->print_envir();
     }catch(std::string e){
        std::cout << "Line: " << line_counter << std::endl;
        std::cout << e << std::endl;
@@ -161,8 +162,8 @@ Lambda::Lambda(std::vector<std::string> args,ExprPtr body,EnvirPtr envir){
 
 VariablePtr Lambda::operator()(std::vector<VariablePtr> & args,EnvirPtr envir){
   EnvirPtr fun_envir=EnvirPtr(new Envir(this->envir));
-  for(int i=0;i<args.size();i++){//auto it = args.begin(); it != args.end(); ++it) {
-    VariablePtr var_i= args[i];//eval( (*it),envir);
+  for(int i=0;i<args.size();i++){
+    VariablePtr var_i= args[i];
     std::string name_i = this->args[i];
     fun_envir->set(name_i,var_i);
   }
@@ -178,7 +179,6 @@ std::string Lambda::to_str(){
 }
 
 int main(int argc, char *argv[]){
-//  from_file("test.lisp");
   if(argc >1){
     from_file(std::string(argv[1]));
   }else{
