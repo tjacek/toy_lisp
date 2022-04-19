@@ -1,8 +1,19 @@
-//use regex::Regex;
+use regex::Regex;
+
+enum TokenType{
+  SYNTAX,
+  NUMBER,
+  VAR,
+}    
+
+struct Token{
+  token_type:TokenType,
+  data:String,
+}
 
 struct TokenSeq {
-    tokens: Vec<String>,
-    current: u32,
+  tokens: Vec<Token>,
+  current: u32,
 }
 
 fn tokenize(line:String) -> TokenSeq{
@@ -10,10 +21,11 @@ fn tokenize(line:String) -> TokenSeq{
      tokens: Vec::new(),
      current: 0
   };
-//  let seperator = Regex::new(r"\\s+").expect("Invalid regex");
   let splits = line.split_whitespace().into_iter();
   for split_i in splits {
-    tokens_seq.tokens.push(String::from(split_i));
+    let token_i=Token{token_type:TokenType::VAR, 
+                      data:String::from(split_i)};
+    tokens_seq.tokens.push(token_i);
     println!("\"{}\"", split_i);
   }
   tokens_seq
