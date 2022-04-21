@@ -3,9 +3,9 @@ extern crate lazy_static;
 use regex::Regex;
 
 enum TokenType{
-  SYNTAX,
-  NUMBER,
-  VAR,
+  Syntax, //YNTAX,
+  Number,//UMBER,
+  Var,//AR,
 }    
 
 struct Token{
@@ -18,10 +18,20 @@ struct TokenSeq {
   current: u32,
 }
 
+impl Token{
+  fn get_type(&self)->&str{
+    match &self.token_type {
+      TokenType::Syntax => "syntax",
+      TokenType::Number => "number",
+      TokenType::Var => "var",
+    }
+  }
+}
+
 impl TokenSeq {
   fn print(&self){
     for token_i in &self.tokens{
-      print!("{} ",token_i.data);
+      print!("{}:{} ",token_i.get_type(),token_i.data);
     }
   }
 }
@@ -37,11 +47,11 @@ fn tokenize(line:String) -> TokenSeq{
   }
   let splits = line.split_whitespace().into_iter();
   for split_i in splits {
-    let mut type_i:TokenType=TokenType::VAR;
+    let mut type_i:TokenType=TokenType::Var;
     if NUMBER_RE.is_match(split_i){
-      type_i=TokenType::NUMBER;
+      type_i=TokenType::Number;
     }else if SYNTAX_RE.is_match(split_i){
-      type_i=TokenType::SYNTAX;
+      type_i=TokenType::Syntax;
     }
     let token_i=Token{token_type:type_i, 
                       data:String::from(split_i)};
