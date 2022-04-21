@@ -3,9 +3,9 @@ extern crate lazy_static;
 use regex::Regex;
 
 enum TokenType{
-  Syntax, //YNTAX,
-  Number,//UMBER,
-  Var,//AR,
+  Syntax,
+  Number,
+  Var,
 }    
 
 struct Token{
@@ -29,6 +29,15 @@ impl Token{
 }
 
 impl TokenSeq {
+
+  fn shift(&mut self)->u32{
+    let size:u32=self.tokens.len().try_into().unwrap();
+    if self.current<size { 
+      self.current+=1
+    } 
+    self.current
+  }
+
   fn print(&self){
     for token_i in &self.tokens{
       print!("{}:{} ",token_i.get_type(),token_i.data);
