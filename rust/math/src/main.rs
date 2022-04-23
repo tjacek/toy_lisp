@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate lazy_static;
 use regex::Regex;
+use std::fs::File;
+use std::io::{self, prelude::*, BufReader};
 
 enum TokenType{
   Syntax,
@@ -42,6 +44,7 @@ impl TokenSeq {
     for token_i in &self.tokens{
       print!("{}:{} ",token_i.get_type(),token_i.data);
     }
+    println!("");
   }
 }
 
@@ -69,8 +72,18 @@ fn tokenize(line:String) -> TokenSeq{
   tokens_seq
 }
 
+fn interpret(in_path:String){
+  let file = File::open(in_path).unwrap();
+  let reader = BufReader::new(file);
+  for line in reader.lines() {
+    let line = line.unwrap();
+    let tokens=tokenize(line);
+    tokens.print();
+//    println!("{}", line);
+  }  
+}
+
 fn main() {
-  let hello = String::from("read miles");
-  let tokens = tokenize(hello);
-  tokens.print();
+  let in_path = String::from("../../C/test.math");
+  interpret(in_path);
 }
