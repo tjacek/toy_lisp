@@ -17,7 +17,14 @@ struct Token{
 
 struct TokenSeq {
   tokens: Vec<Token>,
-  current: u32,
+  current: usize,
+}
+
+enum ASTree{
+  Leaf {id:String,data:String},
+  ASTreeNode {id:String,
+              left:Box<ASTree>,
+              right:Box<ASTree>},
 }
 
 impl Token{
@@ -32,9 +39,12 @@ impl Token{
 
 impl TokenSeq {
 
-  fn shift(&mut self)->u32{
-    let size:u32=self.tokens.len().try_into().unwrap();
-    if self.current<size { 
+//  fn peek(&mut self)->Token{
+//    self.tokens[self.current]
+//  }
+
+  fn shift(&mut self)->usize{
+    if self.current<self.tokens.len() { 
       self.current+=1
     } 
     self.current
@@ -72,6 +82,10 @@ fn tokenize(line:String) -> TokenSeq{
   tokens_seq
 }
 
+fn parse_statement(tokens:TokenSeq) -> ASTree{
+  ASTree::Leaf{id:String::from("NULL"),data:String::from("NULL")}
+}
+
 fn interpret(in_path:String){
   let file = File::open(in_path).unwrap();
   let reader = BufReader::new(file);
@@ -79,7 +93,6 @@ fn interpret(in_path:String){
     let line = line.unwrap();
     let tokens=tokenize(line);
     tokens.print();
-//    println!("{}", line);
   }  
 }
 
